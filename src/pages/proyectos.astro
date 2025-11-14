@@ -1,0 +1,108 @@
+---
+// src/pages/proyectos.astro
+// Versión: 1.6 | Fix: Header dinámico (CMS) y Colisión de Menú
+import { getCollection, getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import FeaturedProject from '../components/FeaturedProject.astro'; 
+
+// 1. Cargar Datos de Página CMS
+const pageContent = await getEntry('pages', 'proyectos');
+const pageData = pageContent?.data ?? {};
+
+// 2. SEO y Textos
+const seoTitle = pageData.title ?? "Portafolio | Elevawod";
+const seoDesc = pageData.description ?? "Explora nuestros proyectos recientes.";
+const h1 = pageData.h1 ?? "Nuestro Portafolio";
+const h2_reciente = pageData.h2_reciente ?? "Lo Más Reciente";
+const h2_archivo = pageData.h2_archivo ?? "Archivo Completo";
+
+// --- NUEVO V1.6: Carga de imagen de cabecera ---
+const headerImage = pageData.header_image ?? '/assets/uploads/placeholder.jpeg';
+
+// 3. Cargar y Ordenar Proyectos
+const allProjects = await getCollection('proyectos');
+const sortedProjects = allProjects.sort((a, b) => {
+  const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
+  const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
+  return dateB - dateA;
+});
+
+const featuredProject = sortedProjects[0];
+const otherProjects = sortedProjects.slice(1);
+---
+
+<Layout title={seoTitle} description={seoDesc}>
+  
+  {/* CORRECCIÓN V1.6: 
+    - Añadido 'pt-32' para bajar el contenido y evitar colisión con el menú.
+    - Incrementado 'h-96' para más espacio.
+  */}
+  <header 
+    class="relative h-96 flex items-center justify-center text-center bg-primary overflow-hidden pt-32"
+  >
+    {/* CORRECCIÓN V1.6: 
+      - Fondo dinámico desde el CMS (con fallback).
+      - Reemplazado el comentario placeholder.
+    */}
+    <div 
+      class="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+      style={`background-image: url('${headerImage}')`}
+    >
+    </div>
+    
+    {/* Overlay para legibilidad */}
+    <div class="absolute inset-0 bg-primary/70 z-10"></div>
+    
+    <div class="relative z-20 px-6 animate-fade-in-up">
+      <h1 class="text-5xl md:text-6xl font-serif font-bold text-white mb-4">
+        {h1}
+      </h1>
+      <p class="text-white/70 text-lg max-w-xl mx-auto">{seoDesc}</p>
+    </div>
+  </header>
+  
+  <section class="py-20 px-6 bg-secondary/20">
+    <div class="container mx-auto max-w-screen-xl">
+        
+        {/* Sección Destacada */}
+        {featuredProject && (
+          <div class="mb-20">
+            <h2 class="text-3xl font-serif font-bold text-white mb-8 border-l-4 border-accent pl-4">
+              {h2_reciente}
+            </h2>
+            <FeaturedProject project={featuredProject} />
+          </div>
+        )}
+        
+        {/* Grid Archivo */}
+        {otherProjects.length > 0 && (
+          <div>
+            <h2 class="text-3xl font-serif font-bold text-white mb-8 border-l-4 border-accent-secondary pl-4">
+              {h2_archivo}
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {otherProjects.map(project => (
+                <ProjectCard project={project} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {allProjects.length === 0 && (
+           <div class="text-center py-20 text-white/50">
+             <p>Aún no hay proyectos publicados en el portafolio.</p>
+           </div>
+        )}
+
+    </div>
+  </section>
+</Layout>
+
+<style>
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in-up { animation: fade-in-up 0.8s ease-out forwards; }
+</style>

@@ -1,0 +1,134 @@
+---
+// src/pages/proyectos/[slug].astro
+// Versión: 1.7 | Fix: TS Error 'posiblemente undefined' (ts(2532))
+export const prerender = true;
+
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { mdToHtml } from '../../utils/markdown';
+
+const allProducts = await getCollection('productos');
+
+export async function getStaticPaths() {
+  const projects = await getCollection('proyectos');
+  return projects.map(project => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props as { project: CollectionEntry<'proyectos'> };
+
+if (!project) {
+  return new Response(null, { status: 404, statusText: 'No encontrado' });
+}
+
+const selectedProductTitles = project.data.services_list ?? [];
+const relatedProducts = allProducts.filter(product => 
+  selectedProductTitles.includes(product.data.title)
+);
+
+const { titulo, summary, client_name, date, project_details, gallery } = project.data;
+
+const headerImage = gallery?.[0]?.image_path ?? '/assets/uploads/placeholder.jpeg';
+const safeTitle = titulo ?? 'Detalle del Portafolio';
+
+// --- CORRECCIÓN V1.7 ---
+// Se usa optional chaining (?.) para acceder de forma segura a .data.brand_name
+const brandName = (await getEntry('ajustes', 'home'))?.data.brand_name ?? 'nuestro equipo';
+const safeDesc = summary ?? 'Un proyecto realizado por ' + brandName;
+// --- FIN CORRECCIÓN ---
+---
+
+<Layout title={safeTitle} description={safeDesc}>
+
+  <article class="bg-primary text-text-base">
+    
+    <header class="relative min-h-[28rem] flex items-center justify-center text-center text-white pt-32">
+      <div 
+        class="absolute inset-0 bg-cover bg-center" 
+        style={`background-image: url('${headerImage}')`}
+      ></div>
+      <div class="absolute inset-0 bg-primary/80 backdrop-blur-sm"></div>
+      
+      <div class="relative z-10 p-8 animate-fade-in-up">
+        <span class="text-sm font-bold text-accent uppercase tracking-widest">{client_name}</span>
+        <h1 class="text-4xl md:text-6xl font-serif font-bold text-white mt-4 mb-2">{titulo}</h1>
+        {date && <time class="text-sm text-white/60 block">{new Date(date).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</time>}
+      </div>
+    </header>
+
+    <div class="container mx-auto max-w-screen-xl p-6 md:p-12">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        
+        <div class="lg:col-span-8">
+          {summary && (
+            <div class="mb-12 border-b border-white/10 pb-12">
+               <h2 class="font-serif text-3xl font-bold text-white mb-6">Resumen del Desafío</h2>
+               <div class="prose prose-invert prose-lg max-w-none text-text-base/80 prose-strong:text-accent" set:html={mdToHtml(summary)}></div>
+            </div>
+          )}
+
+          {project_details && (
+            <div class="prose prose-invert prose-lg max-w-none text-text-base/80 prose-strong:text-accent">
+              <h2 class="font-serif text-3xl font-bold text-white mb-6">Solución y Resultados</h2>
+               <div set:html={mdToHtml(project_details)}></div>
+            </div>
+          )}
+
+          {!summary && !project_details && (
+            <p class="text-white/50">No hay más detalles disponibles para este proyecto.</p>
+          )}
+        </div>
+
+        <aside class="lg:col-span-4">
+          <div class="bg-secondary/60 backdrop-blur-md border border-white/10 p-6 rounded-2xl sticky top-28 shadow-xl">
+            <h3 class="text-xl font-serif font-bold text-white border-b-2 border-accent-secondary pb-3 mb-4">Servicios Realizados</h3>
+            {relatedProducts.length > 0 ? (
+              <ul class="flex flex-wrap gap-2">
+                {relatedProducts.map(product => (
+                  <li class="bg-accent/10 text-accent font-semibold text-sm py-1 px-3 rounded-full border border-accent/20">
+                    {product.data.title}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="text-sm text-white/50">No hay servicios especificados.</p>
+            )}
+          </div>
+        </aside>
+      </div>
+
+      {gallery && gallery.length > 0 && (
+         <section class="mt-24">
+          <h2 class="text-3xl font-serif font-bold text-white text-center mb-10">Galería de Imágenes</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {gallery.map(item => (
+              <a 
+                href={item.image_path} 
+                target="_blank" 
+                class="group relative block w-full h-64 rounded-lg overflow-hidden border border-white/10 shadow-lg transition-all duration-300 hover:shadow-2xl hover:border-accent"
+              >
+                <img 
+                  src={item.image_path} 
+                  alt={`Imagen del proyecto ${titulo}`} 
+                  loading="lazy" 
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div class="absolute inset-0 bg-primary/40 group-hover:bg-primary/10 transition-colors"></div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  </article>
+</Layout>
+
+<style>
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in-up { animation: fade-in-up 0.8s ease-out forwards; }
+</style>

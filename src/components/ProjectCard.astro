@@ -1,0 +1,64 @@
+---
+// src/components/ProjectCard.astro
+// Versión: 1.1 | Fix: Slug Access
+import type { CollectionEntry } from 'astro:content';
+import { getEntry } from 'astro:content'; 
+import { mdToHtml } from '../utils/markdown';
+
+export interface Props {
+  project: CollectionEntry<'proyectos'>;
+}
+
+const { project } = Astro.props;
+
+// 1. Config CTA
+const ajustes = await getEntry("ajustes", "home");
+const ctaTextos = ajustes?.data.cta_textos ?? {};
+const ctaText = ctaTextos.ver_proyecto ?? "Ver Caso de Estudio";
+
+// 2. Datos Proyecto
+// NOTA: 'slug' se obtiene directamente de 'project', no de 'project.data'
+const { client_name, titulo, summary, image } = project.data;
+const safeImage = image ?? '/assets/uploads/placeholder.jpeg';
+const summaryHtml = summary ? mdToHtml(summary) : "";
+---
+
+<a 
+  href={`/proyectos/${project.slug}`} 
+  class="
+    group relative flex flex-col w-full 
+    rounded-lg overflow-hidden 
+    bg-secondary/70 backdrop-blur-md 
+    border border-white/10
+    transition-all duration-300
+    hover:border-accent-secondary hover:shadow-2xl hover:shadow-accent-secondary/10
+    no-underline hover:no-underline
+    h-full
+">
+  <div class="relative w-full h-48 overflow-hidden">
+    <img 
+      src={safeImage} 
+      alt={titulo} 
+      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+    />
+    <div class="absolute top-4 left-4 bg-primary/90 backdrop-blur px-3 py-1 rounded text-xs font-bold text-accent-secondary uppercase tracking-wider shadow-lg">
+      {client_name}
+    </div>
+  </div>
+  
+  <div class="flex flex-col flex-grow p-6">
+    <h3 class="text-2xl font-serif font-bold mb-3 text-white group-hover:text-accent-secondary transition-colors">
+        {titulo}
+    </h3>
+    
+    {summary && (
+      <div class="prose prose-invert prose-sm max-w-none text-text-base/80 mb-4 line-clamp-3 prose-strong:text-accent">
+        <span set:html={summaryHtml} />
+      </div>
+    )}
+
+    <div class="mt-auto pt-4 flex items-center text-sm text-white/60 font-bold group-hover:text-white transition-colors">
+      {ctaText} <span class="ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">&rarr;</span>
+    </div>
+  </div>
+</a>

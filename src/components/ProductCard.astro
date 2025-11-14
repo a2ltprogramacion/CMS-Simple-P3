@@ -1,0 +1,68 @@
+---
+// src/components/ProductCard.astro
+// Versión: 1.0
+import type { CollectionEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
+import { mdToHtml } from '../utils/markdown';
+
+export interface Props {
+  producto: CollectionEntry<'productos'>;
+}
+
+const { producto } = Astro.props;
+
+// 1. Cargar configuración de CTA (Fallback seguro)
+const ajustes = await getEntry("ajustes", "home");
+const ctaTextos = ajustes?.data.cta_textos ?? {};
+const contactText = ctaTextos.contactar_producto ?? "Contactar";
+
+// 2. Datos del Producto
+const { title, subtitle, description, image } = producto.data;
+const safeImage = image ?? '/assets/uploads/placeholder.jpeg';
+const renderedDescriptionHtml = description ? mdToHtml(description) : "";
+---
+
+<div class="
+  group relative flex flex-col h-80 w-full 
+  rounded-lg overflow-hidden cursor-pointer
+  bg-secondary/70 backdrop-blur-md 
+  border border-white/10
+  transition-all duration-300
+  hover:border-accent hover:shadow-2xl hover:shadow-accent/10
+">
+  {/* Imagen con Overlay */}
+  <div class="relative h-40 w-full overflow-hidden">
+    <img 
+      src={safeImage} 
+      alt={title} 
+      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+    />
+    <div class="absolute inset-0 bg-primary/40 group-hover:bg-primary/20 transition-colors duration-300"></div>
+  </div>
+  
+  <div class="flex flex-col flex-grow p-5">
+    <h3 class="text-xl font-serif font-bold mb-1 text-white group-hover:text-accent transition-colors">
+        {title}
+    </h3>
+    
+    {subtitle && (
+      <p class="text-xs text-text-base/70 mb-3 uppercase tracking-wider">
+        {subtitle}
+      </p>
+    )}
+    
+    {/* Descripción truncada visualmente por altura */}
+    {description && (
+      <div class="prose prose-invert prose-sm max-w-none text-text-base/80 line-clamp-2 text-sm">
+        <span set:html={renderedDescriptionHtml} />
+      </div>
+    )}
+
+    <div class="mt-auto pt-4 border-t border-white/5">
+      <a href="#contacto" class="text-sm text-accent font-bold hover:text-white transition-colors flex items-center gap-2 no-underline">
+        {contactText}
+        <span class="transform group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+      </a>
+    </div>
+  </div>
+</div>
