@@ -88,11 +88,16 @@ testimonios:
         clave para organizar nuestra estrategia y dar el siguiente paso.
         Realmente se preocupan por tu negocio."'
       author: Javier Mendoza, CEO de Café Origen
-    - quote: '"Habíamos trabajado con otras agencias y siempre terminábamos
+    - quote: >-
+        "Habíamos trabajado con otras agencias y siempre terminábamos
         confundidos con informes llenos de jerga técnica y sin resultados
         claros. El equipo de ELEVAWOD fue diferente desde el día uno. Nos
         presentaron una estrategia simple, un plan de acción concreto y, lo más
-        importante, lo cumplieron. ¡Por fin entendemos hacia dónde vamos!"'
+        importante, lo cumplieron. ¡Por fin entendemos hacia dónde vamos!"
+
+
+
+        "Habíamos trabajado con otras agencias y siempre terminábamos confundidos con informes llenos de jerga técnica y sin resultados claros. El equipo de ELEVAWOD fue diferente desde el día uno. Nos presentaron una estrategia simple, un plan de acción concreto y, lo más importante, lo cumplieron. ¡Por fin entendemos hacia dónde vamos!"
       author: Carolina Rivas, Gerente de Servicios Integrales R&G
 image: /ruta/a/imagen-ejemplo.jpg
 description: En ELEVAWOD, creamos estrategias de marketing digital para PYMES.
