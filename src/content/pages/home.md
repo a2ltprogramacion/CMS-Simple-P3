@@ -1,17 +1,6 @@
 ---
 brand_name: ARGENIS
 canonical_url: https://elevawod.cl/
-hero:
-  background_image: https://zerotrust.mx/wp-content/uploads/2023/08/Dimensiones-personalizadas-1000x600-px.jpg
-  title: "**Convertimos** estrategias **en impacto**"
-  subtitle: "No somos la típica agencia. Dejamos la complejidad a un lado y nos
-    enfocamos en resultados reales: más clientes, más ventas y un retorno de
-    inversión **(ROAS)** que puedas ver."
-  cta_text: Solicita tu Diagnóstico Gratuito
-  cta_url: "#contacto"
-  show_section: true
-  image_logo: /assets/uploads/logo-trasnparente.png
-  image_main: /assets/uploads/hero.png
 cualidades_marca:
   show_section: true
   items:
@@ -28,10 +17,6 @@ cualidades_marca:
       image_fondo: /assets/uploads/gemini_generated_image_wmno0vwmno0vwmno.png
       icon: /assets/uploads/gemini_generated_image_5yfobf5yfobf5yfo.png
 robots: index, follow
-productos:
-  show_section: true
-  title: Nuestros Productos
-  subtitle: Productos de Calidad
 proyectos:
   show_section: true
   title: Proyectos
@@ -41,6 +26,10 @@ proyectos:
     - "De Seguidores a Fans: Creando una Comunidad Fiel para Café Origen"
     - "De la Duda a la Ganancia: Triplicando el Retorno de Inversión para Tienda
       Aura"
+productos:
+  show_section: true
+  title: Nuestros Productos
+  subtitle: Productos de Calidad
 og:
   image: /assets/uploads/logo.jpg
   title: "ELEVAWOD: Tu Socio Estratégico en Marketing Digital para PYMES"
@@ -48,6 +37,18 @@ og:
     un trato humano para potenciar a PYMES y emprendedores. Resultados reales,
     sin la complejidad. ¡Descubre cómo lo hacemos!
 title: Agencia de Marketing Digital para PYMES y Emprendedores | ELEVAWOD
+hero:
+  cta_url: "#contacto"
+  show_section: true
+  background_image: https://zerotrust.mx/wp-content/uploads/2023/08/Dimensiones-personalizadas-1000x600-px.jpg
+  image_logo: /assets/uploads/logo-trasnparente.png
+  subtitle: "No somos la típica agencia. Dejamos la complejidad a un lado y nos
+    enfocamos en resultados reales: más clientes, más ventas y un retorno de
+    inversión **(ROAS)** que puedas ver."
+  title: "**Convertimos** estrategias **en impacto**"
+  cta_text: Solicita tu Diagnóstico Gratuito
+  description: Decripción Hero
+  image_main: /assets/uploads/hero.png
 clientes:
   title: Clientes
   show_section: true
@@ -68,8 +69,6 @@ clientes:
   lista_destacados:
     - Genericorp
     - Global Solutions
-    - Natura
-    - Nexus
 testimonios:
   show_section: true
   title: Lo que dicen nuestros socios
@@ -140,6 +139,10 @@ servicios:
       image: /assets/uploads/gemini_generated_image_47fe5h47fe5h47fe.png
   show_section: true
 nosotros:
+  servicios_lista: |-
+    * Servicio #1
+    * Servicio #2
+    * Servicio #3
   vision_title: Nuestra Visión
   show_section: true
   vision_text: Texto Visión
@@ -158,6 +161,11 @@ nosotros:
 
 
     **Tu éxito es nuestro éxito.** Estamos aquí para ser el socio que te acompaña, te entiende y te ayuda a escalar.
+  lista_destacados_productos:
+    - Branding para Marcas que Dejan Huella
+    - Gestión de Redes Sociales que Conectan
+    - Publicidad Digital con Retorno (ROAS)
+    - Email Marketing que Fideliza y Automatiza
   image: /assets/uploads/logo.jpg
   mision_text: Texto Misión
   description: Descripción principal
