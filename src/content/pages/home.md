@@ -46,7 +46,7 @@ hero:
     enfocamos en resultados reales: más clientes, más ventas y un retorno de
     inversión **(ROAS)** que puedas ver."
   title: "**Convertimos** estrategias **en impacto**"
-  image: /assets/uploads/proyectos.png
+  image: /assets/uploads/gemini_generated_image_309ow2309ow2309o.png
   cta_text: Solicita tu Diagnóstico Gratuito
   description: Decripción Hero
   image_main: /assets/uploads/hero.png
