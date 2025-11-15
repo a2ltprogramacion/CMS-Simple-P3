@@ -1,5 +1,5 @@
 // src/content/config.ts
-// Versión: 1.1 | Fix: TypeScript Inference
+// Versión: 1.4 | Corrección: Schema de Footer 'columns' (z.array(z.array(...)) -> z.array(z.object(...)))
 import { z, defineCollection } from 'astro:content';
 
 // 1. Colección Productos
@@ -21,19 +21,20 @@ const paginasCollection = defineCollection({
     title: z.string().optional(),
     description: z.string().optional(),
     h1: z.string().optional(),
-    header_image: z.string().optional(), // Imagen de cabecera para paginas (ej. proyectos)
+    header_image: z.string().optional(), 
     h2_reciente: z.string().optional(),
     h2_archivo: z.string().optional(),
 
-    // Secciones (Sin .default({}) para evitar bloqueo de tipos)
     template: z.string().optional(),
     
+    // --- HERO (V1.3: 'image' añadido) ---
     hero: z.object({
       show_section: z.boolean().optional(), 
       title: z.string().optional(),
       description: z.string().optional(), 
       cta_text: z.string().optional(),
       cta_url: z.string().optional(),
+      image: z.string().optional(), 
     }).optional(),
 
     nosotros: z.object({
@@ -71,7 +72,7 @@ const paginasCollection = defineCollection({
   }),
 });
 
-// 3. Colección Proyectos (Añadido slug a data por si acaso, aunque usaremos project.slug)
+// 3. Colección Proyectos
 const proyectosCollection = defineCollection({
   type: 'content',
   schema: z.object({
@@ -83,7 +84,6 @@ const proyectosCollection = defineCollection({
     summary: z.string().optional(), 
     project_details: z.string().optional(),    
     gallery: z.array(z.object({ image_path: z.string() })).optional(),
-    // Opcional: si en el CMS guardas el slug explícitamente en el frontmatter
     slug: z.string().optional(),
   }),
 });
@@ -113,7 +113,7 @@ const ajustesCollection = defineCollection({
   }),
 });
 
-// 6. Contacto
+// 6. Contacto (V1.3)
 const contactoCollection = defineCollection({
   type: 'data',
   schema: z.object({
@@ -121,10 +121,7 @@ const contactoCollection = defineCollection({
     phone: z.string().optional(),
     email: z.string().optional(),
     address: z.string().optional(),
-    contact_heading: z.string().optional(),
-    contact_subheading: z.string().optional(),
     whatsapp_message: z.string().optional(),
-    show_contact_section: z.boolean().optional(),
     logo_footer: z.string().optional(),
     footer_description: z.string().optional(),
     social_media: z.object({
@@ -137,10 +134,11 @@ const contactoCollection = defineCollection({
   }),
 });
 
-// 7. Footer Nav
+// 7. Footer Nav (V1.4 - CORREGIDO)
 const footerNavigationCollection = defineCollection({
   type: 'data',
   schema: z.object({
+    // CORRECCIÓN: Se eliminó el z.array() anidado.
     columns: z.array(z.object({
       title: z.string(),
       links: z.array(z.object({

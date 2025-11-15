@@ -1,39 +1,35 @@
 ---
 // src/components/ProjectCard.astro
-// Versión: 1.1 | Fix: Slug Access
+// Versión: 2.2 | Refactor: Alias de Ruta (~/)
 import type { CollectionEntry } from 'astro:content';
-import { getEntry } from 'astro:content'; 
-import { mdToHtml } from '../utils/markdown';
+import { getEntry } from 'astro:content';
+import { mdToHtml } from '~/utils/markdown';
 
 export interface Props {
   project: CollectionEntry<'proyectos'>;
 }
 
 const { project } = Astro.props;
-
-// 1. Config CTA
 const ajustes = await getEntry("ajustes", "home");
 const ctaTextos = ajustes?.data.cta_textos ?? {};
 const ctaText = ctaTextos.ver_proyecto ?? "Ver Caso de Estudio";
 
-// 2. Datos Proyecto
-// NOTA: 'slug' se obtiene directamente de 'project', no de 'project.data'
 const { client_name, titulo, summary, image } = project.data;
 const safeImage = image ?? '/assets/uploads/placeholder.jpeg';
 const summaryHtml = summary ? mdToHtml(summary) : "";
 ---
-
 <a 
   href={`/proyectos/${project.slug}`} 
   class="
     group relative flex flex-col w-full 
     rounded-lg overflow-hidden 
-    bg-secondary/70 backdrop-blur-md 
-    border border-white/10
+    bg-secondary
+    border border-gray-200
     transition-all duration-300
-    hover:border-accent-secondary hover:shadow-2xl hover:shadow-accent-secondary/10
+    hover:border-accent-secondary hover:shadow-xl
     no-underline hover:no-underline
     h-full
+    shadow-md
 ">
   <div class="relative w-full h-48 overflow-hidden">
     <img 
@@ -41,23 +37,21 @@ const summaryHtml = summary ? mdToHtml(summary) : "";
       alt={titulo} 
       class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
     />
-    <div class="absolute top-4 left-4 bg-primary/90 backdrop-blur px-3 py-1 rounded text-xs font-bold text-accent-secondary uppercase tracking-wider shadow-lg">
+    <div class="absolute top-4 left-4 
+bg-secondary/90 backdrop-blur-sm px-3 py-1 rounded text-xs font-bold text-accent-secondary uppercase tracking-wider shadow-lg border border-gray-200/50">
       {client_name}
     </div>
   </div>
-  
   <div class="flex flex-col flex-grow p-6">
-    <h3 class="text-2xl font-serif font-bold mb-3 text-white group-hover:text-accent-secondary transition-colors">
+    <h3 class="text-2xl font-serif font-bold mb-3 text-text-base group-hover:text-accent-secondary transition-colors">
         {titulo}
     </h3>
-    
     {summary && (
-      <div class="prose prose-invert prose-sm max-w-none text-text-base/80 mb-4 line-clamp-3 prose-strong:text-accent">
+      <div class="prose prose-sm max-w-none text-text-base/80 mb-4 line-clamp-3 prose-strong:text-accent">
         <span set:html={summaryHtml} />
       </div>
     )}
-
-    <div class="mt-auto pt-4 flex items-center text-sm text-white/60 font-bold group-hover:text-white transition-colors">
+   <div class="mt-auto pt-4 flex items-center text-sm text-text-base/60 font-bold group-hover:text-text-base transition-colors">
       {ctaText} <span class="ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">&rarr;</span>
     </div>
   </div>

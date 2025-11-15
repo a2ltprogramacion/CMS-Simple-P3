@@ -1,5 +1,5 @@
 // tailwind.config.mjs
-// Versión: 1.5 | Paleta: Cián + Índigo
+// Versión: 2.0 | Paleta: B2B Conservador (Modo Claro)
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
@@ -13,33 +13,32 @@ export default {
     },
     extend: {
       colors: {
-        // --- Paleta V1.5 (Tech / Premium) ---
+        // --- Paleta V2.0 (B2B Conservador / Modo Claro) ---
         
-        // Fondo Principal (Casi Negro)
-        'primary': '#0D0D1F', 
+        // Fondo Principal (Fondo de Página)
+        'primary': '#F7F7F7', // Blanco Roto / Gris Muy Claro
         
-        // Fondo Secundario (Azul Oscuro para tarjetas base)
-        'secondary': '#1A1A2E', 
-        
-        // Acento Principal (Héroe: CTAs, Enlaces)
-        'accent': '#00BFFF', // Azul Eléctrico (Cián)
-        
-        // Acento Secundario (Soporte: Textos, Botones Secundarios)
-        'accent-secondary': '#7F5AF0', // Índigo Digital (Púrpura)
+        // Fondo Secundario (Fondo de Tarjetas / Secciones Destacadas)
+        'secondary': '#FFFFFF', // Blanco Puro
 
-        // Texto Principal (Sobre fondos oscuros)
-        'text-base': '#E0E0E0', // Gris Claro
+        // Acento Principal (Títulos, Énfasis Básico)
+        'accent': '#0077B6', // Azul de Confianza (Similar a LinkedIn)
         
-        // Texto Invertido (Sobre fondos claros/neón)
-        'text-inverted': '#0D0D1F', // Casi Negro
+        // Acento Secundario (CTAs, Botones Primarios, Bordes de Énfasis)
+        'accent-secondary': '#1E3A8A', // Azul Marino Profundo (Navy)
+
+        // Texto Principal (Sobre fondos claros)
+        'text-base': '#1F2937', // Gris Oscuro (Legibilidad)
+        
+        // Texto Invertido (Sobre acentos)
+        'text-inverted': '#FFFFFF', // Blanco
       },
       fontFamily: {
+        // Mantener las tipografías pero el estilo visual cambia con la paleta
         'sans': ['Lato', 'sans-serif'],
         'serif': ['Space Grotesk', 'sans-serif'],
       },
-      backdropBlur: {
-        'xs': '2px',
-      },
+      // Eliminado 'backdropBlur' ya que no se usará en el nuevo diseño
     },
   },
   plugins: [

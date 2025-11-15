@@ -1,10 +1,10 @@
 ---
 // src/pages/proyectos.astro
-// Versión: 1.6 | Fix: Header dinámico (CMS) y Colisión de Menú
+// Versión: 2.0 | Estilo B2B (Modo Claro) y Refactor de Alias
 import { getCollection, getEntry } from 'astro:content';
-import Layout from '../layouts/Layout.astro';
-import ProjectCard from '../components/ProjectCard.astro';
-import FeaturedProject from '../components/FeaturedProject.astro'; 
+import Layout from '~/layouts/Layout.astro';
+import ProjectCard from '~/components/ProjectCard.astro';
+import FeaturedProject from '~/components/FeaturedProject.astro';
 
 // 1. Cargar Datos de Página CMS
 const pageContent = await getEntry('pages', 'proyectos');
@@ -17,7 +17,7 @@ const h1 = pageData.h1 ?? "Nuestro Portafolio";
 const h2_reciente = pageData.h2_reciente ?? "Lo Más Reciente";
 const h2_archivo = pageData.h2_archivo ?? "Archivo Completo";
 
-// --- NUEVO V1.6: Carga de imagen de cabecera ---
+// Carga de imagen de cabecera
 const headerImage = pageData.header_image ?? '/assets/uploads/placeholder.jpeg';
 
 // 3. Cargar y Ordenar Proyectos
@@ -27,48 +27,43 @@ const sortedProjects = allProjects.sort((a, b) => {
   const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
   return dateB - dateA;
 });
-
 const featuredProject = sortedProjects[0];
 const otherProjects = sortedProjects.slice(1);
 ---
 
 <Layout title={seoTitle} description={seoDesc}>
   
-  {/* CORRECCIÓN V1.6: 
-    - Añadido 'pt-32' para bajar el contenido y evitar colisión con el menú.
-    - Incrementado 'h-96' para más espacio.
-  */}
+  {/* Cabecera B2B (Modo Claro) */}
   <header 
-    class="relative h-96 flex items-center justify-center text-center bg-primary overflow-hidden pt-32"
+    class="relative h-96 flex items-center justify-center text-center bg-secondary overflow-hidden pt-32"
   >
-    {/* CORRECCIÓN V1.6: 
-      - Fondo dinámico desde el CMS (con fallback).
-      - Reemplazado el comentario placeholder.
-    */}
+    {/* Fondo dinámico desde el CMS (con fallback) */}
     <div 
       class="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
       style={`background-image: url('${headerImage}')`}
     >
     </div>
     
-    {/* Overlay para legibilidad */}
-    <div class="absolute inset-0 bg-primary/70 z-10"></div>
+    {/* Overlay para legibilidad (más oscuro para modo claro) */}
+    <div class="absolute inset-0 bg-gray-900/60 z-10"></div>
     
     <div class="relative z-20 px-6 animate-fade-in-up">
       <h1 class="text-5xl md:text-6xl font-serif font-bold text-white mb-4">
         {h1}
       </h1>
-      <p class="text-white/70 text-lg max-w-xl mx-auto">{seoDesc}</p>
+      
+      <p class="text-white/80 text-lg max-w-xl mx-auto">{seoDesc}</p>
     </div>
   </header>
   
-  <section class="py-20 px-6 bg-secondary/20">
+  {/* Contenido B2B (Fondo 'primary' gris claro) */}
+  <section class="py-20 px-6 bg-primary">
     <div class="container mx-auto max-w-screen-xl">
         
         {/* Sección Destacada */}
         {featuredProject && (
           <div class="mb-20">
-            <h2 class="text-3xl font-serif font-bold text-white mb-8 border-l-4 border-accent pl-4">
+            <h2 class="text-3xl font-serif font-bold text-text-base mb-8 border-l-4 border-accent-secondary pl-4">
               {h2_reciente}
             </h2>
             <FeaturedProject project={featuredProject} />
@@ -78,7 +73,8 @@ const otherProjects = sortedProjects.slice(1);
         {/* Grid Archivo */}
         {otherProjects.length > 0 && (
           <div>
-            <h2 class="text-3xl font-serif font-bold text-white mb-8 border-l-4 border-accent-secondary pl-4">
+            <h2 class="text-3xl font-serif font-bold text-text-base 
+mb-8 border-l-4 border-accent pl-4">
               {h2_archivo}
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -90,7 +86,7 @@ const otherProjects = sortedProjects.slice(1);
         )}
 
         {allProjects.length === 0 && (
-           <div class="text-center py-20 text-white/50">
+           <div class="text-center py-20 text-text-base/50">
              <p>Aún no hay proyectos publicados en el portafolio.</p>
            </div>
         )}

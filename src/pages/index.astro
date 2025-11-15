@@ -1,13 +1,15 @@
 ---
 // src/pages/index.astro
-// Versión: 1.2 | Rediseño Clientes & Ajustes Finales
+// Versión: 3.2 | Corrección: Clientes (Títulos, Animación), Testimonios (Estrellas)
+// Versión: 3.1 | Corrección: Hero (TS, Márgenes, Textura CSS)
+// Versión: 3.0 | Refactor Estético Premium B2B
+// Versión: 2.3 | CORRECCIÓN DE SINTAXIS
+
 import { getEntry, getCollection, type CollectionEntry } from "astro:content";
-import Layout from "../layouts/Layout.astro";
-import { mdToHtml } from "../utils/markdown";
-import FeaturedProject from "../components/FeaturedProject.astro";
-// Asegúrate de que ProjectCardV4.astro YA NO EXISTA en la carpeta components
-import ProjectCard from "../components/ProjectCard.astro"; 
-import ProductCard from "../components/ProductCard.astro";
+import Layout from "~/layouts/Layout.astro";
+import { mdToHtml } from "~/utils/markdown";
+import FeaturedProject from "~/components/FeaturedProject.astro";
+import ProjectCard from "~/components/ProjectCard.astro"; 
 
 // --- 1. Carga de Datos ---
 const home = await getEntry("pages", "home");
@@ -23,24 +25,28 @@ const ajustesData = ajustes?.data ?? {};
 const title = ajustesData.title ?? "Elevawod | Soluciones Digitales";
 const description = ajustesData.description ?? "Transformamos ideas en productos digitales.";
 
-// --- 3. Preparación de Secciones ---
-// HERO
+// --- 3. Preparación de Secciones (V3.2) ---
+
+// HERO (V3.1 - Corrección TS)
 const hero = data.hero ?? { show_section: true };
 const heroTitle = mdToHtml(hero.title ?? "Título Hero");
 const heroDesc = mdToHtml(hero.description ?? "Descripción Hero");
+const heroImage = data.hero?.image ?? "/assets/uploads/hero-placeholder-image.png"; 
 
-// NOSOTROS
+// NOSOTROS Y SERVICIOS (Fusión V3.0)
 const nosotros = data.nosotros ?? { show_section: true };
 const nosotrosTitle = mdToHtml(nosotros.title ?? "Sobre Nosotros");
 const nosotrosSubtitle = mdToHtml(nosotros.subtitle ?? "¿Quiénes Somos?");
 const nosotrosDesc = mdToHtml(nosotros.description ?? "Texto descriptivo.");
-const nosotrosServicios = mdToHtml(nosotros.servicios_lista ?? "- Servicio Ejemplo");
+const nosotrosBeneficios = mdToHtml(nosotros.servicios_lista ?? "- Beneficio 1\n- Beneficio 2");
 
 const featuredProdTitles = nosotros.lista_destacados_productos ?? [];
-const featuredProducts = allProductos.filter(p => featuredProdTitles.includes(p.data.title)).slice(0, 4);
+const featuredProducts = allProductos
+    .filter(p => featuredProdTitles.includes(p.data.title))
+    .slice(0, 4);
 const productsToDisplay = featuredProducts.length > 0 ? featuredProducts : allProductos.slice(0, 4);
 
-// PROYECTOS
+// PROYECTOS (V3.0)
 const proyectosSeccion = data.proyectos ?? { show_section: true };
 const proyectosTitle = mdToHtml(proyectosSeccion.title ?? "Nuestro Portafolio");
 const proyectosSubtitle = mdToHtml(proyectosSeccion.subtitle ?? "Casos de éxito recientes.");
@@ -50,56 +56,47 @@ const sortedProjects = allProyectos.sort((a, b) => {
   const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
   return dateB - dateA;
 });
-
 const featuredProject = sortedProjects[0];
+
 const gridProjectsCMS = proyectosSeccion.lista_destacados ?? [];
 let gridProjects: CollectionEntry<"proyectos">[] = [];
-
 if (gridProjectsCMS.length > 0) {
   gridProjects = allProyectos.filter(p => gridProjectsCMS.includes(p.data.titulo));
 } else {
   gridProjects = sortedProjects.slice(1, 4);
 }
 
-// --- LÓGICA CLIENTES (REFACTORIZADO V1.2) ---
+// --- CLIENTES (Refactor Lógica V3.2: Unificación y Animación) ---
 const clientesSeccion = data.clientes ?? { show_section: true };
 const clientesTitle = mdToHtml(clientesSeccion.title ?? "Nuestros Clientes");
 
-// 1. GRID ESTÁTICO (Selección Manual, Máximo 8)
-const clientesCMS = clientesSeccion.lista_destacados ?? [];
-let clientesGrid: CollectionEntry<"clientes">[] = [];
+// 1. Clientes Destacados (Grid Estático)
+const clientesDestacadosCMS = clientesSeccion.lista_destacados ?? [];
+const clientesDestacados = allClientes
+    .filter(c => clientesDestacadosCMS.includes(c.data.titulo))
+    .slice(0, 4); 
 
-if (clientesCMS.length > 0) {
-  // Si hay selección manual, filtramos y limitamos a 8
-  clientesGrid = allClientes
-    .filter(c => clientesCMS.includes(c.data.titulo))
-    .slice(0, 8);
-} else {
-  // Fallback: Si no hay selección, tomamos los primeros 8 de la base total
-  clientesGrid = allClientes.slice(0, 8);
-}
+// 2. Otros Clientes (Slider)
+const clientesNoDestacados = allClientes.filter(c => !clientesDestacadosCMS.includes(c.data.titulo));
 
-// 2. SCROLL INFINITO (Todos los clientes + Lógica de Relleno)
+// 3. Rellenamos la lista del slider
 let scrollerList: CollectionEntry<"clientes">[] = [];
-
-if (clientesSeccion.show_scroller && allClientes.length > 0) {
-  // A. Empezamos con todos los clientes reales
-  let baseList = [...allClientes];
-  
-  // B. Lógica de Relleno Inteligente:
-  // Si tenemos pocos clientes, repetimos la lista base hasta tener al menos 12 items
-  // para asegurar que cubren el 70% del ancho visualmente.
-  const MIN_ITEMS_VISUAL = 12; 
-  
-  while (baseList.length < MIN_ITEMS_VISUAL) {
-    baseList = [...baseList, ...allClientes]; // Clonamos la base original
+if (clientesSeccion.show_scroller && clientesNoDestacados.length > 0) {
+  let baseList = [...clientesNoDestacados];
+  const MIN_ITEMS_VISUAL = 8; 
+  while (baseList.length < MIN_ITEMS_VISUAL && baseList.length > 0) {
+    baseList = [...baseList, ...clientesNoDestacados];
   }
-
-  // C. Duplicación Final para el Loop CSS (Efecto Infinito sin saltos)
-  scrollerList = [...baseList, ...baseList];
+  scrollerList = [...baseList];
 }
 
-// TESTIMONIOS
+// 4. Agrupamos para el Slider (Chunks de 4)
+const clientChunks: CollectionEntry<"clientes">[][] = [];
+for (let i = 0; i < scrollerList.length; i += 4) {
+    clientChunks.push(scrollerList.slice(i, i + 4));
+}
+
+// TESTIMONIOS (V3.2: Ajuste Estrellas)
 const testimoniosSeccion = data.testimonios ?? { show_section: true };
 const testimoniosTitle = mdToHtml(testimoniosSeccion.title ?? "Testimonios");
 const testimoniosLista = testimoniosSeccion.lista ?? [];
@@ -107,124 +104,124 @@ const testimoniosLista = testimoniosSeccion.lista ?? [];
 
 <Layout title={title} description={description}>
   
-  {/* --- 1. HERO SECTION --- */}
+  {/* --- 1. HERO SECTION (V3.1) --- */}
   {hero.show_section && (
-    <section id="inicio" class="relative min-h-screen flex items-center justify-center text-center overflow-hidden">
-      <div id="particles-js" class="absolute inset-0 z-0 pointer-events-none"></div>
+    <section id="inicio" class="relative min-h-[90vh] lg:min-h-screen overflow-hidden bg-secondary">
+      <div class="absolute inset-0 subtle-noise-texture"></div>
       
-      <div class="relative z-10 p-8 max-w-4xl animate-fade-in-up">
-        <div class="text-5xl md:text-7xl font-serif font-bold mb-6 text-white leading-tight prose-strong:text-accent">
-           <span set:html={heroTitle} />
-        </div>
-        <div class="text-xl md:text-2xl text-text-base/80 mb-10 max-w-2xl mx-auto prose-strong:text-white">
-          <span set:html={heroDesc} />
-        </div>
+      <div class="container mx-auto max-w-screen-xl h-full px-6 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center pt-40 pb-16 lg:pt-32 lg:pb-0">
         
-        {hero.cta_url && (
-          <a href={hero.cta_url} class="bg-accent text-primary font-bold py-4 px-10 text-lg rounded-sm hover:bg-white hover:text-accent transition-all duration-300 shadow-[0_0_20px_rgba(0,191,255,0.3)] hover:shadow-[0_0_30px_rgba(0,191,255,0.6)] no-underline">
-            {hero.cta_text ?? "Comenzar"}
-          </a>
+        <div class="relative z-10 text-center lg:text-left animate-fade-in-up mt-0 lg:mt-20 2xl:mt-40">
+          <div class="text-4xl md:text-7xl font-serif font-bold mb-6 text-text-base leading-tight prose-strong:text-accent-secondary">
+             <span set:html={heroTitle} />
+          </div>
+          <div class="text-xl md:text-3xl text-text-base/70 mb-10 max-w-xl mx-auto lg:mx-0 prose-strong:text-text-base">
+            <span set:html={heroDesc} />
+          </div>
+          {hero.cta_url && (
+            <a href={hero.cta_url} class="bg-accent-secondary text-text-inverted font-bold py-4 px-10 text-lg rounded-sm hover:bg-accent hover:text-text-inverted transition-all duration-300 shadow-xl hover:shadow-2xl no-underline">
+              {hero.cta_text ?? "Comenzar"}
+            </a>
+          )}
+        </div>
+
+        <div class="relative z-10 flex items-center justify-center animate-fade-in-up mt-0 lg:mt-20 2xl:mt-40 pt-10 lg:pt-0" style="animation-delay: 200ms;">
+           <img src={heroImage} alt="Hero Image" class="w-full max-w-lg object-contain rounded-lg shadow-2xl" />
+        </div>
+
+      </div>
+    </section>
+  )}
+
+  {/* --- 2. SECCIÓN NOSOTROS Y SERVICIOS (V3.0) --- */}
+  {nosotros.show_section && (
+    <section id="nosotros-productos" class="py-24 px-6 relative z-10 bg-primary border-t border-b border-gray-200">
+      <div class="container mx-auto max-w-screen-xl">
+        
+        <div class="text-center mb-16 max-w-3xl mx-auto">
+          <h2 class="text-sm font-bold tracking-[0.2em] text-accent uppercase mb-2">
+            Nuestra Esencia
+          </h2>
+          <div class="text-4xl md:text-5xl font-serif font-bold text-text-base inline-block">
+            <span set:html={nosotrosTitle} />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20 items-center">
+            <div class="prose prose-lg text-text-base/80 prose-strong:text-accent-secondary leading-relaxed">
+              <h3 class="text-3xl md:text-4xl font-serif font-bold text-text-base mb-6 leading-tight" set:html={nosotrosSubtitle} />
+              <span set:html={nosotrosDesc} />
+            </div>
+            
+            <div class="bg-secondary rounded-xl p-8 border border-gray-200/60 shadow-lg">
+              <h4 class="text-lg font-serif font-bold text-text-base uppercase tracking-wider mb-6">Beneficios Clave:</h4>
+              <div class="prose max-w-none text-text-base/90 
+                          prose-ul:list-none prose-ul:pl-0 
+                          prose-li:flex 
+                          prose-li:items-center prose-li:gap-3 prose-li:mb-4 prose-li:m-0
+                          prose-strong:text-accent-secondary">
+                 <style is:inline>
+                   .lista-beneficios li::before { 
+                     content: '✓';
+                     display: inline-flex;
+                     justify-content: center;
+                     align-items: center;
+                     width: 22px;
+                     height: 22px;
+                     background: rgba(30, 58, 138, 0.1); 
+                     color: #1E3A8A; 
+                     font-weight: bold;
+                     border-radius: 50%;
+                     font-size: 12px;
+                     flex-shrink: 0;
+                   }
+                 </style>
+                 <div class="lista-beneficios font-sans font-medium">
+                   <span set:html={nosotrosBeneficios} />
+                 </div>
+               </div>
+            </div>
+        </div>
+
+        {productsToDisplay.length > 0 && (
+          <div>
+            <h3 class="text-3xl font-serif font-bold text-text-base text-center mb-12">Nuestros Servicios Principales</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {productsToDisplay.map(prod => {
+                const descHtml = mdToHtml(prod.data.description);
+                return (
+                  <div class="bg-secondary p-6 rounded-lg border border-gray-200 shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center">
+                    <img src={prod.data.image ?? '/assets/uploads/placeholder.jpeg'} alt={prod.data.title} class="w-16 h-16 object-cover mb-4 rounded-full border border-gray-200" />
+                    <h4 class="text-xl font-serif font-bold text-accent-secondary mb-2">{prod.data.title}</h4>
+                    <div class="prose prose-sm text-text-base/70 line-clamp-3">
+                      <span set:html={descHtml} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         )}
       </div>
     </section>
   )}
 
-  {/* --- 2. SECCIÓN NOSOTROS (REDISEÑO V1.1: Fusión Estratégica) --- */}
-  {nosotros.show_section && (
-    <section id="nosotros-productos" class="py-24 px-4 sm:px-8 relative z-10">
-      <div class="container mx-auto max-w-screen-xl">
-        
-        {/* Título Flotante */}
-        <div class="text-center mb-12">
-          <h2 class="text-sm font-bold tracking-[0.2em] text-accent uppercase mb-2 animate-fade-in-up">
-            Nuestra Esencia
-          </h2>
-          <div class="text-4xl md:text-5xl font-serif font-bold text-white inline-block">
-            <span set:html={nosotrosTitle} />
-          </div>
-        </div>
-
-        {/* Contenedor Principal Glassmorphism */}
-        <div class="rounded-3xl overflow-hidden bg-secondary/40 backdrop-blur-xl border border-white/10 shadow-2xl flex flex-col lg:flex-row">
-            
-            {/* ZONA 1: IDENTIDAD (Izquierda - Texto y Beneficios) */}
-            <div class="lg:w-5/12 p-8 md:p-12 flex flex-col justify-center bg-gradient-to-b from-white/5 to-transparent border-b lg:border-b-0 lg:border-r border-white/10 relative overflow-hidden">
-              {/* Efecto de luz de fondo */}
-              <div class="absolute top-0 left-0 w-full h-full bg-accent/5 blur-3xl pointer-events-none"></div>
-              
-              <div class="relative z-10">
-                <h3 class="text-3xl md:text-4xl font-serif font-bold text-white mb-6 leading-tight" set:html={nosotrosSubtitle} />
-                
-                <div class="prose prose-invert prose-lg text-text-base/80 mb-8 prose-strong:text-accent leading-relaxed">
-                  <span set:html={nosotrosDesc} />
-                </div>
-
-                {/* Lista Transformada en "Puntos de Poder" */}
-                <div class="bg-primary/30 rounded-xl p-6 border border-white/5">
-                  <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4 text-opacity-70">Nuestras Capacidades:</h4>
-                  <div class="prose prose-invert max-w-none text-text-base/90 
-                              prose-ul:list-none prose-ul:pl-0 
-                              prose-li:flex prose-li:items-center prose-li:gap-3 prose-li:mb-3 prose-li:m-0
-                              prose-strong:text-accent-secondary">
-                     <style is:inline>
-                       /* Icono check futurista personalizado */
-                       .lista-servicios li::before { 
-                         content: '✓'; 
-                         display: inline-flex;
-                         justify-content: center;
-                         align-items: center;
-                         width: 20px;
-                         height: 20px;
-                         background: rgba(0, 191, 255, 0.2);
-                         color: #00BFFF; 
-                         font-weight: bold; 
-                         border-radius: 4px;
-                         font-size: 12px;
-                         flex-shrink: 0;
-                       }
-                     </style>
-                     <div class="lista-servicios font-sans font-medium">
-                       <span set:html={nosotrosServicios} />
-                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ZONA 2: VITRINA (Derecha - Productos/Servicios) */}
-            <div class="lg:w-7/12 p-6 md:p-10 bg-primary/20">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 h-full content-center">
-                {productsToDisplay.map((prod, index) => (
-                  // Wrapper para animación escalonada simple
-                  <div class="transform transition-all duration-300 hover:-translate-y-2">
-                    <ProductCard producto={prod} />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-        </div>
-      </div>
-    </section>
-  )}
-
-  {/* --- 3. SECCIÓN PROYECTOS --- */}
+  {/* --- 3. SECCIÓN PROYECTOS (V3.0) --- */}
   {proyectosSeccion.show_section && featuredProject && (
-    <section id="lo-ultimo" class="py-24 px-6 relative z-10 bg-secondary/20">
+    <section id="lo-ultimo" class="py-24 px-6 
+relative z-10 bg-secondary border-t border-b border-gray-200">
       <div class="container mx-auto max-w-screen-xl">
         <div class="text-center mb-16 max-w-3xl mx-auto">
-           <h2 class="text-4xl md:text-5xl font-serif font-bold text-white mb-4 prose-strong:text-accent">
+           <h2 class="text-4xl md:text-5xl font-serif font-bold text-text-base mb-4 prose-strong:text-accent">
              <span set:html={proyectosTitle} />
            </h2>
-           <div class="text-xl text-text-base/70 prose-strong:text-white">
+           <div class="text-xl text-text-base/70 prose-strong:text-text-base">
              <span set:html={proyectosSubtitle} />
            </div>
         </div>
-
         <div class="mb-16 animate-fade-in-up">
           <FeaturedProject project={featuredProject} />
         </div>
-
         {gridProjects.length > 0 && (
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {gridProjects.map(p => (
@@ -236,78 +233,92 @@ const testimoniosLista = testimoniosSeccion.lista ?? [];
     </section>
   )}
 
-  {/* --- 4. SECCIÓN CLIENTES (REDISEÑO V1.2: Grid Controlado + Marquee Centrado) --- */}
+  {/* --- 4. SECCIÓN CLIENTES (V3.2 - Unificada y Animada) --- */}
   {clientesSeccion.show_section && (
-    <section id="clientes" class="py-20 bg-primary relative z-10">
+    <section id="clientes" class="py-24 bg-primary relative z-10 border-b border-gray-200 overflow-x-hidden"> {/* Ocultar overflow para la animación */}
       <div class="container mx-auto px-6">
-        <h2 class="text-4xl md:text-5xl font-serif font-bold text-white mb-12 text-center">
-          <span set:html={clientesTitle} />
+        <h2 class="text-4xl md:text-5xl font-serif font-bold text-text-base mb-16 text-center">
+           <span set:html={clientesTitle} />
         </h2>
         
-        {/* 1. GRID ESTÁTICO (Máx 8 items: 4 col x 2 filas) */}
-        {clientesGrid.length > 0 && (
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-20 max-w-5xl mx-auto items-center justify-items-center">
-            {clientesGrid.map(c => (
-              <div class="group flex items-center justify-center p-2 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 hover:bg-white/10 transition-all duration-300 w-60 backdrop-blur-sm">
-                <img 
-                  src={c.data.logo} 
-                  alt={c.data.titulo} 
-                  class="max-w-60 w-auto object-contain opacity-50 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-500"
-                />
+        {/* 1. GRID ESTÁTICO (Destacados - V3.2: Título eliminado) */}
+        {clientesDestacados.length > 0 && (
+          <div class="mb-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto items-center justify-items-center">
+              {clientesDestacados.map(c => (
+                <div class="group flex items-center justify-center p-4 rounded-xl bg-secondary border border-gray-200/50 hover:border-gray-300 transition-all duration-300 w-full h-60 shadow-sm hover:shadow-lg">
+                  <img 
+                    src={c.data.logo} 
+                    alt={c.data.titulo} 
+                    class="max-w-full w-auto max-h-56 object-contain opacity-70 group-hover:opacity-100 transition-all duration-500"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 2. SLIDER POR BLOQUES (Otros Clientes - V3.2: Título eliminado y Animación) */}
+        {clientesSeccion.show_scroller && clientChunks.length > 0 && (
+          <div class="mt-20">
+            <div id="client-slider-container" class="relative max-w-5xl mx-auto">
+              
+              {/* V3.2: Div para la animación de entrada */}
+              <div id="client-slider-scroller" class="relative overflow-hidden min-h-[120px] invisible"> {/* 'invisible' para ocultar antes de animar */}
+                {clientChunks.map((chunk, index) => (
+                  <div class={`client-slide absolute inset-0 transition-opacity duration-1000 flex justify-center items-center ${index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`} data-index={index}>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
+                      {chunk.map(c => (
+                        <div class="group flex items-center justify-center p-4 rounded-xl bg-secondary border border-gray-200/50 w-full h-60">
+                          <img 
+                            src={c.data.logo} 
+                            alt={c.data.titulo} 
+                            class="max-w-full w-auto max-h-56 object-contain opacity-60"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+
+              {clientChunks.length > 1 && (
+                <div class="flex justify-center gap-4 mt-8">
+                  <button id="prev-client" class="text-text-base/50 hover:text-accent-secondary text-2xl px-2" aria-label="Anterior">&#8592;</button>
+                  <div id="client-dots-container" class="flex gap-2 items-center"></div>
+                  <button id="next-client" class="text-text-base/50 hover:text-accent-secondary text-2xl px-2" aria-label="Siguiente">&#8594;</button>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
-
-      {/* 2. MARQUEE / SCROLLER (Todos los clientes, centrado 70%) */}
-      {clientesSeccion.show_scroller && scrollerList.length > 0 && (
-        <div class="w-full flex justify-center">
-            {/* CONTENEDOR LIMITADO AL 70% */}
-            <div class="relative w-[90%] md:w-[70%] overflow-hidden py-6 bg-secondary/20 rounded-full border border-white/5 backdrop-blur-md mask-fade-edges">
-              
-              <div class="marquee-track flex gap-16 w-max items-center">
-                 {scrollerList.map((c) => (
-                    <div class="flex-shrink-0 group">
-                        <img 
-                          src={c.data.logo} 
-                          alt={c.data.titulo} 
-                          class="h-24 md:h-32 w-auto object-contain opacity-40 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-500 cursor-pointer"
-                          title={c.data.titulo}
-                        />
-                    </div>
-                 ))}
-              </div>
-
-            </div>
-        </div>
-      )}
     </section>
   )}
 
-  {/* --- 5. SECCIÓN TESTIMONIOS --- */}
+  {/* --- 5. SECCIÓN TESTIMONIOS (V3.2: Estrellas más grandes) --- */}
   {testimoniosSeccion.show_section && (
-    <section id="testimonios" class="py-24 px-6 relative z-10">
-      <div class="container mx-auto max-w-4xl text-center">
-        <h2 class="text-4xl md:text-5xl font-serif font-bold text-white mb-16">
+    <section id="testimonios" class="py-24 px-6 relative z-10 bg-secondary">
+      <div class="container mx-auto max-w-6xl text-center">
+         <h2 class="text-4xl md:text-5xl font-serif font-bold text-text-base mb-16">
           <span set:html={testimoniosTitle} />
         </h2>
 
-        {testimoniosLista.length > 0 ? (
-          <div class="relative bg-secondary/60 backdrop-blur-md p-8 md:p-12 rounded-2xl border border-white/10 shadow-2xl">
-            <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-accent text-primary w-12 h-12 rounded-full flex items-center justify-center text-4xl font-serif font-bold">“</div>
-
-            <div id="testimonio-slider" class="relative overflow-hidden min-h-[200px]">
+        {testimoniosLista.length > 0 ?
+(
+          <div class="relative bg-primary/30 p-8 md:p-12 rounded-2xl border border-gray-200/50 shadow-xl">
+            <div id="testimonio-slider" class="relative min-h-[300px] mb-8">
                {testimoniosLista.map((t, index) => (
-                 <div class={`testimonio-slide absolute inset-0 transition-opacity duration-500 flex flex-col justify-center items-center ${index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`} data-index={index}>
+                 <div class={`testimonio-slide absolute 
+inset-0 transition-opacity duration-500 flex flex-col justify-center items-center ${index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`} data-index={index}>
                     {t.google_review_embed ? (
                       <div set:html={t.google_review_embed} />
                     ) : (
-                      <>
-                        <div class="prose prose-invert prose-xl italic text-text-base mb-6 prose-strong:text-accent-secondary">
+                       <>
+                        <div class="prose prose-xl italic max-w-none text-text-base/80 mb-6 prose-strong:text-accent-secondary">
                           <span set:html={mdToHtml(t.quote)} />
                         </div>
-                        <p class="font-bold text-white uppercase tracking-widest text-sm">
+                         <p class="font-bold text-text-base uppercase tracking-widest text-sm">
                           — {t.author || "Cliente Satisfecho"}
                         </p>
                       </>
@@ -316,14 +327,19 @@ const testimoniosLista = testimoniosSeccion.lista ?? [];
                ))}
             </div>
 
-            <div class="flex justify-center gap-4 mt-8">
-              <button id="prev-testimonio" class="text-white/50 hover:text-accent text-2xl px-2" aria-label="Anterior">&#8592;</button>
+            <div class="flex justify-center gap-4">
+              <button id="prev-testimonio" class="text-text-base/50 hover:text-accent-secondary text-2xl px-2" aria-label="Anterior">&#8592;</button>
               <div id="dots-container" class="flex gap-2 items-center"></div>
-              <button id="next-testimonio" class="text-white/50 hover:text-accent text-2xl px-2" aria-label="Siguiente">&#8594;</button>
+              <button id="next-testimonio" class="text-text-base/50 hover:text-accent-secondary text-2xl px-2" aria-label="Siguiente">&#8594;</button>
             </div>
-          </div>
+
+            {/* V3.2: Contenedor de Estrellas (Más Grandes: text-4xl) con Barrido Metálico */}
+            <div class="absolute bottom-8 right-28 star-shine-container flex gap-1.5 text-6xl text-yellow-500 italic">
+              <span>★★★★★</span>
+            </div>
+           </div>
         ) : (
-           <p class="text-white/50">No hay testimonios configurados.</p>
+           <p class="text-text-base/50">No hay testimonios configurados.</p>
         )}
       </div>
     </section>
@@ -338,105 +354,171 @@ const testimoniosLista = testimoniosSeccion.lista ?? [];
   }
   .animate-fade-in-up { animation: fade-in-up 1s ease-out forwards; }
   
-  /* Animación Marquee */
-  @keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+  /* --- ESTILOS TESTIMONIOS (V3.1 - Efecto Barrido) --- */
+  .star-shine-container {
+    overflow: hidden; /* Clave para el efecto de barrido */
   }
-  .marquee-track {
-    animation: marquee 60s linear infinite; /* Velocidad ajustada */
+  .star-shine-container::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -150%;
+    width: 50%;
+    height: 120%;
+    /* Gradiente de barrido metálico */
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(255, 255, 255, 0.6) 50%,
+      transparent 100%
+    );
+    transform: skewX(-25deg); /* Ángulo del destello */
+    animation: shine-sweep 3s infinite linear;
+    animation-delay: 1s;
   }
-  .marquee-track:hover { animation-play-state: paused; }
 
-  /* Máscara de desvanecimiento para el Scroller Centrado */
-  .mask-fade-edges {
-    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  @keyframes shine-sweep {
+    0% { left: -150%; }
+    80% { left: 150%; }
+    100% { left: 150%; }
+  }
+
+  /* --- ANIMACIÓN CLIENTES (V3.2) --- */
+  @keyframes slide-in-right-abrupt {
+    0% {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .slide-in-right-abrupt {
+    visibility: visible !important; /* Hacer visible al animar */
+    animation: slide-in-right-abrupt 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Curva de aceleración */
   }
 </style>
 
-<script is:inline src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
-<script is:inline src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
 <script>
-  // Fix: Declarar tipo global para window.tsParticles
-  declare global {
-    interface Window {
-      tsParticles: any;
-    }
-  }
-
+  // --- SCRIPT SLIDER TESTIMONIOS (V2.x) ---
   document.addEventListener('DOMContentLoaded', () => {
-    // Lógica Particles
-    if (window.tsParticles) {
-      window.tsParticles.load("particles-js", {
-        fullScreen: { enable: false },
-        particles: {
-          number: { value: 60, density: { enable: true, value_area: 800 } },
-          color: { value: "#00BFFF" },
-          opacity: { value: 0.3 },
-          size: { value: 2 },
-          line_linked: { enable: true, distance: 150, color: "#00BFFF", opacity: 0.2, width: 1 },
-          move: { enable: true, speed: 1 }
-        },
-        interactivity: {
-          events: { onhover: { enable: true, mode: "grab" } },
-          modes: { grab: { distance: 140, line_opacity: 0.5 } }
-        }
-      });
-    }
+    const testimonioSlides = document.querySelectorAll('.testimonio-slide');
+    const testimonioDotsContainer = document.getElementById('dots-container');
+    const testimonioPrevBtn = document.getElementById('prev-testimonio');
+    const testimonioNextBtn = document.getElementById('next-testimonio');
 
-    // Lógica Slider
-    const slides = document.querySelectorAll('.testimonio-slide');
-    const dotsContainer = document.getElementById('dots-container');
-    const prevBtn = document.getElementById('prev-testimonio');
-    const nextBtn = document.getElementById('next-testimonio');
-    
-    if (slides.length > 0 && dotsContainer) {
-      let currentIndex = 0;
-      
-      slides.forEach((_, idx) => {
+    if (testimonioSlides.length > 1 && testimonioDotsContainer) {
+      let testimonioCurrentIndex = 0;
+      testimonioSlides.forEach((_, idx) => {
         const dot = document.createElement('button');
-        dot.className = `w-3 h-3 rounded-full transition-colors ${idx === 0 ? 'bg-accent' : 'bg-white/20'}`;
+        dot.className = `w-3 h-3 rounded-full transition-colors ${idx === 0 ? 'bg-accent-secondary' : 'bg-gray-300'}`;
         dot.ariaLabel = `Ir a testimonio ${idx + 1}`;
-        // Fix: Tipo explícito para el parámetro
-        dot.onclick = () => goToSlide(idx);
-        dotsContainer.appendChild(dot);
+        dot.onclick = () => goToTestimonioSlide(idx);
+        testimonioDotsContainer.appendChild(dot);
       });
+      const testimonioDots = Array.from(testimonioDotsContainer.children);
 
-      const dots = Array.from(dotsContainer.children);
-
-      // Fix: Tipo explícito para index
-      function goToSlide(index: number) {
-        slides[currentIndex].classList.remove('opacity-100', 'z-10');
-        slides[currentIndex].classList.add('opacity-0', 'z-0');
-        dots[currentIndex].classList.replace('bg-accent', 'bg-white/20');
+      function goToTestimonioSlide(index: number) {
+        testimonioSlides[testimonioCurrentIndex].classList.remove('opacity-100', 'z-10');
+        testimonioSlides[testimonioCurrentIndex].classList.add('opacity-0', 'z-0');
+        testimonioDots[testimonioCurrentIndex].classList.replace('bg-accent-secondary', 'bg-gray-300');
         
-        currentIndex = index;
-        slides[currentIndex].classList.remove('opacity-0', 'z-0');
-        slides[currentIndex].classList.add('opacity-100', 'z-10');
-        dots[currentIndex].classList.replace('bg-white/20', 'bg-accent');
+        testimonioCurrentIndex = index;
+        testimonioSlides[testimonioCurrentIndex].classList.remove('opacity-0', 'z-0');
+        testimonioSlides[testimonioCurrentIndex].classList.add('opacity-100', 'z-10');
+        testimonioDots[testimonioCurrentIndex].classList.replace('bg-gray-300', 'bg-accent-secondary');
       }
 
-      function next() {
-        let newIndex = currentIndex + 1;
-        if (newIndex >= slides.length) newIndex = 0;
-        goToSlide(newIndex);
+      function nextTestimonio() {
+        let newIndex = testimonioCurrentIndex + 1;
+        if (newIndex >= testimonioSlides.length) newIndex = 0;
+        goToTestimonioSlide(newIndex);
       }
 
-      function prev() {
-        let newIndex = currentIndex - 1;
-        if (newIndex < 0) newIndex = slides.length - 1;
-        goToSlide(newIndex);
+      function prevTestimonio() {
+        let newIndex = testimonioCurrentIndex - 1;
+        if (newIndex < 0) newIndex = testimonioSlides.length - 1;
+        goToTestimonioSlide(newIndex);
       }
 
-      if(nextBtn) nextBtn.addEventListener('click', next);
-      if(prevBtn) prevBtn.addEventListener('click', prev);
+      if(testimonioNextBtn) testimonioNextBtn.addEventListener('click', nextTestimonio);
+      if(testimonioPrevBtn) testimonioPrevBtn.addEventListener('click', prevTestimonio);
 
-      let timer = setInterval(next, 8000);
-      const container = document.getElementById('testimonio-slider');
-      container?.addEventListener('mouseenter', () => clearInterval(timer));
-      container?.addEventListener('mouseleave', () => timer = setInterval(next, 8000));
+      let testimonioTimer = setInterval(nextTestimonio, 8000);
+      const testimonioContainer = document.getElementById('testimonio-slider');
+      testimonioContainer?.addEventListener('mouseenter', () => clearInterval(testimonioTimer));
+      testimonioContainer?.addEventListener('mouseleave', () => testimonioTimer = setInterval(nextTestimonio, 8000));
     }
+
+    // --- SCRIPT SLIDER CLIENTES (V3.2 - Animación de Entrada) ---
+    const clientSliderElement = document.getElementById('client-slider-scroller');
+    const clientSlides = document.querySelectorAll('.client-slide');
+    const clientDotsContainer = document.getElementById('client-dots-container');
+    const clientPrevBtn = document.getElementById('prev-client');
+    const clientNextBtn = document.getElementById('next-client');
+
+    // Lógica del Slider de Clientes (Solo si hay slides)
+    if (clientSlides.length > 1 && clientDotsContainer) {
+      let clientCurrentIndex = 0;
+      clientSlides.forEach((_, idx) => {
+        const dot = document.createElement('button');
+        dot.className = `w-3 h-3 rounded-full transition-colors ${idx === 0 ? 'bg-accent-secondary' : 'bg-gray-300'}`;
+        dot.ariaLabel = `Ir a bloque ${idx + 1}`;
+        dot.onclick = () => goToClientSlide(idx);
+        clientDotsContainer.appendChild(dot);
+      });
+      const clientDots = Array.from(clientDotsContainer.children);
+
+      function goToClientSlide(index: number) {
+        clientSlides[clientCurrentIndex].classList.remove('opacity-100', 'z-10');
+        clientSlides[clientCurrentIndex].classList.add('opacity-0', 'z-0');
+        clientDots[clientCurrentIndex].classList.replace('bg-accent-secondary', 'bg-gray-300');
+        
+        clientCurrentIndex = index;
+        clientSlides[clientCurrentIndex].classList.remove('opacity-0', 'z-0');
+        clientSlides[clientCurrentIndex].classList.add('opacity-100', 'z-10');
+        clientDots[clientCurrentIndex].classList.replace('bg-gray-300', 'bg-accent-secondary');
+      }
+
+      function nextClient() {
+        let newIndex = clientCurrentIndex + 1;
+        if (newIndex >= clientSlides.length) newIndex = 0;
+        goToClientSlide(newIndex);
+      }
+
+      function prevClient() {
+        let newIndex = clientCurrentIndex - 1;
+        if (newIndex < 0) newIndex = clientSlides.length - 1;
+        goToClientSlide(newIndex);
+      }
+
+      if(clientNextBtn) clientNextBtn.addEventListener('click', nextClient);
+      if(clientPrevBtn) clientPrevBtn.addEventListener('click', prevClient);
+
+      let clientTimer = setInterval(nextClient, 14000);
+      const clientContainer = document.getElementById('client-slider-container');
+      clientContainer?.addEventListener('mouseenter', () => clearInterval(clientTimer));
+      clientContainer?.addEventListener('mouseleave', () => clientTimer = setInterval(nextClient, 14000));
+    }
+
+    // Intersection Observer para la animación de entrada del Slider de Clientes
+    if (clientSliderElement) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('slide-in-right-abrupt');
+            observer.unobserve(entry.target); // Animar solo una vez
+          }
+        });
+      }, { threshold: 0.1 }); // Activar cuando el 10% sea visible
+
+      observer.observe(clientSliderElement);
+    }
+
   });
 </script>
+
+{/* Dependencias de Netlify (Opcional, pero bueno para el CMS) */}
+<script is:inline src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
