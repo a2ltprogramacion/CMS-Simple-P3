@@ -1,5 +1,9 @@
 ---
 // src/pages/index.astro
+// Versión: 3.6 | AJUSTE ESTÉTICO: Aumento de tamaño de imagen de servicios (Relación Áurea).
+// Versión: 3.5 | FIX: Script 'Leer más' (Guards de TypeScript 'null').
+// Versión: 3.4 | REFACTOR: Sección de Servicios (Diseño y JS 'Leer más'). FIX: Enlaces de Clientes, Color de fondo alt.
+// Versión: 3.3 | CORRECCIÓN: Enlaces en logos de clientes.
 // Versión: 3.2 | Corrección: Clientes (Títulos, Animación), Testimonios (Estrellas)
 // Versión: 3.1 | Corrección: Hero (TS, Márgenes, Textura CSS)
 // Versión: 3.0 | Refactor Estético Premium B2B
@@ -40,11 +44,8 @@ const nosotrosSubtitle = mdToHtml(nosotros.subtitle ?? "¿Quiénes Somos?");
 const nosotrosDesc = mdToHtml(nosotros.description ?? "Texto descriptivo.");
 const nosotrosBeneficios = mdToHtml(nosotros.servicios_lista ?? "- Beneficio 1\n- Beneficio 2");
 
-const featuredProdTitles = nosotros.lista_destacados_productos ?? [];
-const featuredProducts = allProductos
-    .filter(p => featuredProdTitles.includes(p.data.title))
-    .slice(0, 4);
-const productsToDisplay = featuredProducts.length > 0 ? featuredProducts : allProductos.slice(0, 4);
+// MODIFICADO V3.4: Mostrar todos los productos, no solo los destacados
+const productsToDisplay = allProductos;
 
 // PROYECTOS (V3.0)
 const proyectosSeccion = data.proyectos ?? { show_section: true };
@@ -135,7 +136,7 @@ const testimoniosLista = testimoniosSeccion.lista ?? [];
 
   {/* --- 2. SECCIÓN NOSOTROS Y SERVICIOS (V3.0) --- */}
   {nosotros.show_section && (
-    <section id="nosotros-productos" class="py-24 px-6 relative z-10 bg-primary border-t border-b border-gray-200">
+    <section id="nosotros-productos" class="py-24 px-6 relative z-10 bg-background-alt border-t border-b border-gray-200">
       <div class="container mx-auto max-w-screen-xl">
         
         <div class="text-center mb-16 max-w-3xl mx-auto">
@@ -185,16 +186,43 @@ const testimoniosLista = testimoniosSeccion.lista ?? [];
 
         {productsToDisplay.length > 0 && (
           <div>
-            <h3 class="text-3xl font-serif font-bold text-text-base text-center mb-12">Nuestros Servicios Principales</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <h3 class="text-3xl font-serif font-bold text-text-base text-center mb-24">Nuestros Servicios Principales</h3>
+            {/* --- REFACTOR V3.6: Proporción de imagen aumentada --- */}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16"> {/* Aumentado gap-y-24 a gap-y-32 */}
               {productsToDisplay.map(prod => {
                 const descHtml = mdToHtml(prod.data.description);
                 return (
-                  <div class="bg-secondary p-6 rounded-lg border border-gray-200 shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center">
-                    <img src={prod.data.image ?? '/assets/uploads/placeholder.jpeg'} alt={prod.data.title} class="w-16 h-16 object-cover mb-4 rounded-full border border-gray-200" />
-                    <h4 class="text-xl font-serif font-bold text-accent-secondary mb-2">{prod.data.title}</h4>
-                    <div class="prose prose-sm text-text-base/70 line-clamp-3">
-                      <span set:html={descHtml} />
+                  <div class="relative pt-24"> {/* MODIFICADO: pt-16 a pt-24 (para 192px / 2) */}
+                    
+                    {/* Imagen Circular Superpuesta */}
+                    <img 
+                      src={prod.data.image ?? '/assets/uploads/placeholder.jpeg'} 
+                      alt={prod.data.title} 
+                      class="w-56 h-56 rounded-full object-cover absolute top-0 left-1/2 -translate-x-1/2 -translate-y-5 border-4 border-secondary shadow-lg z-10"
+                    />
+                    
+                    {/* Cuerpo de la Tarjeta */}
+                    <div class="bg-secondary p-6 rounded-lg border border-gray-200 shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center pt-32 min-h-[400px]"> {/* MODIFICADO: pt-20 a pt-32 */}
+                      
+                      <h4 class="text-2xl font-serif font-bold text-accent-secondary mb-4 min-h-[4rem] flex items-center justify-center">
+                        {prod.data.title}
+                      </h4>
+                      
+                      {/* Contenedor de Descripción con 'Leer más' */}
+                      <div 
+                        data-service-desc 
+                        class="prose prose-base text-text-base/70 line-clamp-3 transition-all duration-300 ease-in-out"
+                      >
+                        <span set:html={descHtml} />
+                      </div>
+                      
+                      {/* Botón de 'Leer más' */}
+                      <button 
+                        data-service-toggle 
+                        class="text-sm text-accent font-bold hover:text-accent-secondary transition-colors mt-4 no-underline"
+                      >
+                        Leer más &rarr;
+                      </button>
                     </div>
                   </div>
                 )
@@ -235,7 +263,7 @@ relative z-10 bg-secondary border-t border-b border-gray-200">
 
   {/* --- 4. SECCIÓN CLIENTES (V3.2 - Unificada y Animada) --- */}
   {clientesSeccion.show_section && (
-    <section id="clientes" class="py-24 bg-primary relative z-10 border-b border-gray-200 overflow-x-hidden"> {/* Ocultar overflow para la animación */}
+    <section id="clientes" class="py-24 bg-background-alt relative z-10 border-b border-gray-200 overflow-x-hidden"> {/* Ocultar overflow para la animación */}
       <div class="container mx-auto px-6">
         <h2 class="text-4xl md:text-5xl font-serif font-bold text-text-base mb-16 text-center">
            <span set:html={clientesTitle} />
@@ -245,15 +273,24 @@ relative z-10 bg-secondary border-t border-b border-gray-200">
         {clientesDestacados.length > 0 && (
           <div class="mb-12">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto items-center justify-items-center">
-              {clientesDestacados.map(c => (
-                <div class="group flex items-center justify-center p-4 rounded-xl bg-secondary border border-gray-200/50 hover:border-gray-300 transition-all duration-300 w-full h-60 shadow-sm hover:shadow-lg">
-                  <img 
-                    src={c.data.logo} 
-                    alt={c.data.titulo} 
-                    class="max-w-full w-auto max-h-56 object-contain opacity-70 group-hover:opacity-100 transition-all duration-500"
-                  />
-                </div>
-              ))}
+              {clientesDestacados.map(c => {
+                const commonClasses = "group flex items-center justify-center p-4 rounded-xl bg-secondary border border-gray-200/50 hover:border-gray-300 transition-all duration-300 w-full h-60 shadow-sm hover:shadow-lg";
+                const img = <img 
+                              src={c.data.logo} 
+                              alt={c.data.titulo} 
+                              class="max-w-full w-auto max-h-56 object-contain opacity-70 group-hover:opacity-100 transition-all duration-500"
+                            />;
+                
+                return c.data.url ? (
+                  <a href={c.data.url} target="_blank" rel="noopener noreferrer" class={commonClasses} aria-label={`Visitar ${c.data.titulo}`}>
+                    {img}
+                  </a>
+                ) : (
+                  <div class={commonClasses}>
+                    {img}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -268,15 +305,24 @@ relative z-10 bg-secondary border-t border-b border-gray-200">
                 {clientChunks.map((chunk, index) => (
                   <div class={`client-slide absolute inset-0 transition-opacity duration-1000 flex justify-center items-center ${index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`} data-index={index}>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
-                      {chunk.map(c => (
-                        <div class="group flex items-center justify-center p-4 rounded-xl bg-secondary border border-gray-200/50 w-full h-60">
-                          <img 
-                            src={c.data.logo} 
-                            alt={c.data.titulo} 
-                            class="max-w-full w-auto max-h-56 object-contain opacity-60"
-                          />
-                        </div>
-                      ))}
+                      {chunk.map(c => {
+                        const commonClasses = "group flex items-center justify-center p-4 rounded-xl bg-secondary border border-gray-200/50 w-full h-60";
+                        const img = <img 
+                                      src={c.data.logo} 
+                                      alt={c.data.titulo} 
+                                      class="max-w-full w-auto max-h-56 object-contain opacity-60"
+                                    />;
+
+                        return c.data.url ? (
+                          <a href={c.data.url} target="_blank" rel="noopener noreferrer" class={commonClasses} aria-label={`Visitar ${c.data.titulo}`}>
+                            {img}
+                          </a>
+                        ) : (
+                          <div class={commonClasses}>
+                            {img}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
@@ -306,7 +352,7 @@ relative z-10 bg-secondary border-t border-b border-gray-200">
 
         {testimoniosLista.length > 0 ?
 (
-          <div class="relative bg-primary/30 p-8 md:p-12 rounded-2xl border border-gray-200/50 shadow-xl">
+          <div class="relative bg-background-alt/30 p-8 md:p-12 rounded-2xl border border-gray-200/50 shadow-xl">
             <div id="testimonio-slider" class="relative min-h-[300px] mb-8">
                {testimoniosLista.map((t, index) => (
                  <div class={`testimonio-slide absolute 
@@ -516,6 +562,34 @@ inset-0 transition-opacity duration-500 flex flex-col justify-center items-cente
 
       observer.observe(clientSliderElement);
     }
+
+    // --- SCRIPT SERVICIOS "LEER MÁS" (V3.5 - Con guards) ---
+    const serviceToggles = document.querySelectorAll('[data-service-toggle]');
+    serviceToggles.forEach(button => {
+      const card = button.closest('.relative');
+      if (!card) return; // FIX: Guard clause
+
+      const desc = card.querySelector('[data-service-desc]');
+      if (!desc) return; // FIX: Guard clause
+
+      // @ts-ignore
+      if (desc.scrollHeight <= desc.clientHeight) {
+        // El contenido cabe, ocultar el botón
+        (button as HTMLElement).style.display = 'none';
+        desc.classList.remove('line-clamp-3'); // Quitar el clamp si no es necesario
+      } else {
+         // El contenido no cabe, añadir el listener
+        button.addEventListener('click', () => {
+          if (desc.classList.contains('line-clamp-3')) {
+            desc.classList.remove('line-clamp-3'); // FIX: Solo remover clamp
+            button.innerHTML = 'Leer menos &larr;';
+          } else {
+            desc.classList.add('line-clamp-3'); // FIX: Solo añadir clamp
+            button.innerHTML = 'Leer más &rarr;';
+          }
+        });
+      }
+    });
 
   });
 </script>

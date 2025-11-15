@@ -1,4 +1,5 @@
 # public/admin/config.yml
+# Versión: 1.3 | CORRECCIÓN: Mejora de 'hints' para mayor claridad del usuario.
 # Versión: 1.2 | Refactor: Usabilidad (Labels, Hints) y Corrección de Schema (Hero.image)
 backend:
   name: git-gateway
@@ -18,17 +19,17 @@ collections:
         label: "Configuración General y SEO" 
         name: "global_settings"
         fields:
-          - {label: "Nombre de la Marca", name: "brand_name", widget: "string", required: true, hint: "El nombre de su empresa o marca (ej. Elevawod)."}
-          - {label: "Título SEO (Página de Inicio)", name: "title", widget: "string", hint: "El título que aparece en la pestaña del navegador y en Google."}
-          - {label: "Meta Descripción (Página de Inicio)", name: "description", widget: "text", hint: "Descripción corta (155 caracteres) para SEO."}
+          - {label: "Nombre de la Marca", name: "brand_name", widget: "string", required: true, hint: "El nombre de su empresa o marca (ej. Elevawod). Se usa en el Header, Footer y SEO."}
+          - {label: "Título SEO (Página de Inicio)", name: "title", widget: "string", hint: "El título que aparece en la pestaña del navegador y en Google (ej. 'Mi Empresa | Servicios de Consultoría')."}
+          - {label: "Meta Descripción (Página de Inicio)", name: "description", widget: "text", hint: "Descripción corta (155 caracteres) para Google. Describe qué hace la empresa."}
           - label: "Textos de Botones (CTA)"
             name: "cta_textos"
             widget: "object"
             required: false
             fields:
-              - {label: "Texto (Leer Más - Proyecto)", name: "leer_mas", widget: "string", default: "Leer Más"}
-              - {label: "Texto (Ver Caso - Tarjeta)", name: "ver_proyecto", widget: "string", default: "Ver Caso de Estudio &rarr;"}
-              - {label: "Texto (Contactar - Servicio)", name: "contactar_producto", widget: "string", default: "Contactar para este servicio"}
+              - {label: "Texto (Leer Más - Proyecto Destacado)", name: "leer_mas", widget: "string", default: "Leer Más", hint: "Texto para el botón en el proyecto destacado (grande) del Home."}
+              - {label: "Texto (Ver Caso - Tarjeta Proyecto)", name: "ver_proyecto", widget: "string", default: "Ver Caso de Estudio", hint: "Texto para las tarjetas pequeñas de proyecto."}
+              - {label: "Texto (Contactar - Tarjeta Servicio)", name: "contactar_producto", widget: "string", default: "Contactar para este servicio", hint: "Texto en las tarjetas de servicios (Home y Servicios)."}
 
   # 2. Contenido de Páginas
   - name: 'pages'
@@ -47,11 +48,11 @@ collections:
             required: false
             fields:
               - {label: "Mostrar Sección", name: "show_section", widget: "boolean", default: true}
-              - {label: "Título Principal (Hero)", name: "title", widget: "markdown", hint: "Use **texto** para resaltar palabras en color de acento."}
-              - {label: "Subtítulo (Hero)", name: "description", widget: "markdown"}
+              - {label: "Título Principal (Hero)", name: "title", widget: "markdown", hint: "El título grande de bienvenida. Use **texto** para resaltar palabras en color de acento."}
+              - {label: "Subtítulo (Hero)", name: "description", widget: "markdown", hint: "El texto descriptivo debajo del título principal."}
               - {label: "Texto del Botón (Hero)", name: "cta_text", widget: "string"}
-              - {label: "URL del Botón (Hero)", name: "cta_url", widget: "string", hint: "Ej: /proyectos o #contacto"}
-              - {label: "Imagen Principal (Hero)", name: "image", widget: "image", required: false, hint: "Imagen que aparece a la derecha del texto. Recomendado: 1:1 o 4:3."}
+              - {label: "URL del Botón (Hero)", name: "cta_url", widget: "string", hint: "El enlace del botón principal. Ej: /proyectos o #contacto"}
+              - {label: "Imagen Principal (Hero)", name: "image", widget: "image", required: false, hint: "Imagen que aparece a la derecha del texto. Recomendado: 1:1 (cuadrada) o 4:3."}
           
           - label: "Sección Nosotros y Servicios"
             name: "nosotros"
@@ -59,11 +60,11 @@ collections:
             required: false
             fields:
               - {label: "Mostrar Sección", name: "show_section", widget: "boolean", default: true}
-              - {label: "Título de la Sección", name: "title", widget: "markdown", default: "Sobre Nosotros"}
-              - {label: "Subtítulo (¿Quiénes somos?)", name: "subtitle", widget: "markdown"}
-              - {label: "Descripción (¿Qué hacemos?)", name: "description", widget: "markdown"}
-              - {label: "Lista de Beneficios / Capacidades", name: "servicios_lista", widget: "markdown", hint: "Use guiones (- Beneficio 1) para cada ítem de la lista."}
-              - {label: "Servicios a Destacar (Grid)", name: "lista_destacados_productos", widget: "relation", collection: "productos", multiple: true, min: 4, max: 4, search_fields: ["title"], value_field: "title", display_fields: ["title"], hint: "Seleccione exactamente 4 servicios para mostrar en el grid."}
+              - {label: "Título de la Sección", name: "title", widget: "markdown", default: "Sobre Nosotros", hint: "Título principal de esta sección (ej. 'Sobre Nosotros')."}
+              - {label: "Subtítulo (¿Quiénes somos?)", name: "subtitle", widget: "markdown", hint: "Título secundario, aparece sobre la descripción (ej. 'Nuestra Misión')."}
+              - {label: "Descripción (¿Qué hacemos?)", name: "description", widget: "markdown", hint: "Párrafo de texto principal sobre la empresa."}
+              - {label: "Lista de Beneficios / Capacidades", name: "servicios_lista", widget: "markdown", hint: "Lista de puntos clave. Use guiones (- Beneficio 1) para cada ítem de la lista."}
+              - {label: "Servicios a Destacar (Grid)", name: "lista_destacados_productos", widget: "relation", collection: "productos", multiple: true, min: 0, max: 4, search_fields: ["title"], value_field: "title", display_fields: ["title"], hint: "DEPRECADO: Esta sección ahora muestra TODOS los servicios. Este campo ya no se utiliza."}
 
           - label: "Sección Proyectos (Portafolio)"
             name: "proyectos"
@@ -73,7 +74,7 @@ collections:
               - {label: "Mostrar Sección", name: "show_section", widget: "boolean", default: true}
               - {label: "Título de la Sección", name: "title", widget: "text"}
               - {label: "Subtítulo de la Sección", name: "subtitle", widget: "text"}
-              - {label: "Proyectos a Destacar (Grid)", name: "lista_destacados", widget: "relation", collection: "proyectos", multiple: true, min: 3, max: 3, search_fields: ["titulo"], value_field: "titulo", display_fields: ["titulo"], hint: "Seleccione 3 proyectos para el grid (El proyecto más reciente se muestra automáticamente en grande)."}
+              - {label: "Proyectos a Destacar (Grid)", name: "lista_destacados", widget: "relation", collection: "proyectos", multiple: true, min: 3, max: 3, search_fields: ["titulo"], value_field: "titulo", display_fields: ["titulo"], hint: "Seleccione 3 proyectos para el grid. (Nota: El proyecto más reciente se muestra automáticamente en grande)."}
 
           - label: "Sección Clientes"
             name: "clientes"
@@ -82,7 +83,7 @@ collections:
             fields:
               - {label: "Mostrar Sección", name: "show_section", widget: "boolean", default: true}
               - {label: "Título de la Sección", name: "title", widget: "text"}
-              - {label: "Clientes Destacados (Fila Estática)", name: "lista_destacados", widget: "relation", collection: "clientes", multiple: true, min: 4, max: 4, search_fields: ["titulo"], value_field: "titulo", display_fields: ["titulo"], hint: "Seleccione exactamente 4 clientes para la fila estática superior."}
+              - {label: "Clientes Destacados (Fila Estática)", name: "lista_destacados", widget: "relation", collection: "clientes", multiple: true, min: 4, max: 4, search_fields: ["titulo"], value_field: "titulo", display_fields: ["titulo"], hint: "Seleccione exactamente 4 clientes (de la 'Base de Datos de Clientes') para la fila estática superior."}
               - {label: "Mostrar Slider con Resto de Clientes", name: "show_scroller", widget: "boolean", default: true, hint: "Si se activa, se mostrará un slider automático con todos los clientes que NO estén en la lista de Destacados."}
 
           - label: "Sección Testimonios"
@@ -100,20 +101,18 @@ collections:
                   - {label: "Autor", name: "author", widget: "text"}
                   - {label: "Google Embed (Opcional)", name: "google_review_embed", widget: "text", hint: "Si pega un código 'embed' de Google Review aquí, reemplazará la Cita y el Autor.", required: false}
                     
-
-      
       # --- Proyectos ---
       - file: "src/content/pages/proyectos.md"
         label: "Página: Portafolio (Listado)"
         name: "proyectos_page"
         fields:
           - {label: "Plantilla", name: "template", widget: "hidden", default: "proyectos"}
-          - {label: "Título SEO", name: "title", widget: "string"}
-          - {label: "Descripción SEO", name: "description", widget: "string"}
-          - {label: "H1 (Título Visible)", name: "h1", widget: "string"}
-          - {label: "Imagen de Fondo (Cabecera)", name: "header_image", widget: "image", required: false}
-          - {label: "Título (Proyecto Reciente)", name: "h2_reciente", widget: "string"}
-          - {label: "Título (Archivo de Proyectos)", name: "h2_archivo", widget: "string"}
+          - {label: "Título SEO", name: "title", widget: "string", hint: "Título de la pestaña del navegador para la página de Portafolio."}
+          - {label: "Descripción SEO", name: "description", widget: "string", hint: "Descripción corta para Google."}
+          - {label: "H1 (Título Visible)", name: "h1", widget: "string", hint: "El título grande que se muestra en la cabecera de la página de Portafolio."}
+          - {label: "Imagen de Fondo (Cabecera)", name: "header_image", widget: "image", required: false, hint: "Imagen de fondo para la cabecera de esta página."}
+          - {label: "Título (Proyecto Reciente)", name: "h2_reciente", widget: "string", hint: "Título para la sección del proyecto más reciente."}
+          - {label: "Título (Archivo de Proyectos)", name: "h2_archivo", widget: "string", hint: "Título para el grid de los demás proyectos."}
 
   # 3. Productos (Servicios)
   - name: 'productos'
@@ -125,9 +124,9 @@ collections:
     identifier_field: 'title'
     fields:
       - {label: "Nombre del Servicio", name: "title", widget: "text"}
-      - {label: "Subtítulo (Opcional)", name: "subtitle", widget: "text"}
-      - {label: "Descripción", name: "description", widget: "markdown"}
-      - {label: "Icono o Imagen del Servicio", name: "image", widget: "image"}
+      - {label: "Subtítulo (Opcional)", name: "subtitle", widget: "text", hint: "Un subtítulo corto o categoría (actualmente no se usa)."}
+      - {label: "Descripción", name: "description", widget: "markdown", hint: "Descripción completa del servicio. Se mostrará en la tarjeta con un botón 'Leer más'."}
+      - {label: "Icono o Imagen del Servicio", name: "image", widget: "image", hint: "Imagen para la tarjeta de servicio (Home). Debe ser CIRCULAR o CUADRADA (1:1)."}
 
   # 4. Proyectos (Casos de Estudio)
   - name: 'proyectos'
@@ -138,13 +137,13 @@ collections:
     slug: '{{slug}}'
     identifier_field: 'titulo'
     fields:
-      - {label: "Slug (URL)", name: "slug", widget: "string", hint: "La URL única, ej: 'mi-proyecto-exitoso'"}
+      - {label: "Slug (URL)", name: "slug", widget: "string", hint: "La URL única, ej: 'mi-proyecto-exitoso' (IMPORTANTE: no cambiar después de publicar)."}
       - {label: "Nombre del Cliente", name: "client_name", widget: "text"}
       - {label: "Título del Proyecto / Caso de Estudio", name: "titulo", widget: "text"}
       - {label: "Fecha", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false}
-      - {label: "Resumen Corto (Para tarjetas)", name: "summary", widget: "markdown"}
-      - {label: "Detalles Completos (Cuerpo del caso)", name: "project_details", widget: "markdown"}
-      - {label: "Imagen Principal (Miniatura)", name: "image", widget: "image"}
+      - {label: "Resumen Corto (Para tarjetas)", name: "summary", widget: "markdown", hint: "Texto que aparece en la tarjeta de proyecto y en el resumen de la página de detalle."}
+      - {label: "Detalles Completos (Cuerpo del caso)", name: "project_details", widget: "markdown", hint: "El contenido principal del caso de estudio (desafío, solución, resultados)."}
+      - {label: "Imagen Principal (Miniatura)", name: "image", widget: "image", hint: "La imagen principal que se usa en las tarjetas y cabeceras. Recomendado 16:9 o 4:3."}
 
   # 5. Clientes
   - name: 'clientes'
@@ -155,10 +154,10 @@ collections:
     slug: '{{slug}}'
     identifier_field: 'titulo'
     fields:
-      - {label: "Slug (URL)", name: "slug", widget: "string"}
+      - {label: "Slug (URL)", name: "slug", widget: "string", hint: "Identificador único (ej. 'nombre-cliente')."}
       - {label: "Nombre del Cliente", name: "titulo", widget: "string"}
-      - {label: "Logo del Cliente", name: "logo", widget: "image"}
-      - {label: "Website (Opcional)", name: "url", widget: "string", required: false}
+      - {label: "Logo del Cliente", name: "logo", widget: "image", hint: "Subir logo preferiblemente en formato PNG transparente y proporción cuadrada (1:1)."}
+      - {label: "Website (Opcional)", name: "url", widget: "string", required: false, hint: "La URL completa (con https://) del sitio web del cliente. El logo enlazará aquí."}
 
   # 6. Contacto y Footer
   - name: 'informacion-de-contacto'
@@ -168,13 +167,13 @@ collections:
         label: "General"
         name: "general"
         fields:
-          - {label: "Número de WhatsApp", name: "whatsapp", widget: "string", hint: "Formato internacional sin signos (ej. 584120000000)"}
-          - {label: "Mensaje predeterminado de WhatsApp", name: "whatsapp_message", widget: "text"}
+          - {label: "Número de WhatsApp", name: "whatsapp", widget: "string", hint: "Formato internacional sin signos (ej. 584120000000)."}
+          - {label: "Mensaje predeterminado de WhatsApp", name: "whatsapp_message", widget: "text", hint: "El mensaje que el usuario enviará al hacer clic (ej. 'Hola, quiero más información')."}
           - {label: "Teléfono Visible (Footer)", name: "phone", widget: "string"}
           - {label: "Email (Footer)", name: "email", widget: "string"}
           - {label: "Dirección Física (Footer)", name: "address", widget: "markdown"}
-          - {label: "Logo del Footer", name: "logo_footer", widget: "image", required: false}
-          - {label: "Slogan / Descripción Corta (Footer)", name: "footer_description", widget: "text"}
+          - {label: "Logo del Footer", name: "logo_footer", widget: "image", required: false, hint: "Una versión del logo que contraste bien sobre fondo oscuro (ej. logo en blanco)."}
+          - {label: "Slogan / Descripción Corta (Footer)", name: "footer_description", widget: "text", hint: "Texto corto que aparece bajo el logo del footer."}
           - label: "Redes Sociales"
             name: "social_media"
             widget: "object"

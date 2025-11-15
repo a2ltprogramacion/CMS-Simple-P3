@@ -52,8 +52,8 @@ const safeDesc = summary ?? 'Un proyecto realizado por ' + brandName;
       <div class="absolute inset-0 bg-primary/80 backdrop-blur-sm"></div>
       
       <div class="relative z-10 p-8 animate-fade-in-up">
-        <span class="text-sm font-bold text-accent uppercase tracking-widest">{client_name}</span>
-        <h1 class="text-4xl md:text-6xl font-serif font-bold text-white mt-4 mb-2">{titulo}</h1>
+        <span class="text-xl font-bold text-accent uppercase tracking-widest">{client_name}</span>
+        <h1 class="text-4xl md:text-6xl font-serif font-bold text-gray-600 mt-4 mb-2">{titulo}</h1>
         {date && <time class="text-sm text-white/60 block">{new Date(date).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</time>}
       </div>
     </header>
@@ -64,14 +64,14 @@ const safeDesc = summary ?? 'Un proyecto realizado por ' + brandName;
         <div class="lg:col-span-8">
           {summary && (
             <div class="mb-12 border-b border-white/10 pb-12">
-               <h2 class="font-serif text-3xl font-bold text-white mb-6">Resumen del Desafío</h2>
+               <h2 class="font-serif text-3xl font-bold text-gray-600 mb-6">Resumen del Desafío</h2>
                <div class="prose prose-invert prose-lg max-w-none text-text-base/80 prose-strong:text-accent" set:html={mdToHtml(summary)}></div>
             </div>
           )}
 
           {project_details && (
             <div class="prose prose-invert prose-lg max-w-none text-text-base/80 prose-strong:text-accent">
-              <h2 class="font-serif text-3xl font-bold text-white mb-6">Solución y Resultados</h2>
+              <h2 class="font-serif text-3xl font-bold text-gray-600 mb-6">Solución y Resultados</h2>
                <div set:html={mdToHtml(project_details)}></div>
             </div>
           )}
@@ -83,7 +83,7 @@ const safeDesc = summary ?? 'Un proyecto realizado por ' + brandName;
 
         <aside class="lg:col-span-4">
           <div class="bg-secondary/60 backdrop-blur-md border border-white/10 p-6 rounded-2xl sticky top-28 shadow-xl">
-            <h3 class="text-xl font-serif font-bold text-white border-b-2 border-accent-secondary pb-3 mb-4">Servicios Realizados</h3>
+            <h3 class="text-xl font-serif font-bold text-gray-600 border-b-2 border-accent-secondary pb-3 mb-4">Servicios Realizados</h3>
             {relatedProducts.length > 0 ? (
               <ul class="flex flex-wrap gap-2">
                 {relatedProducts.map(product => (
@@ -93,7 +93,7 @@ const safeDesc = summary ?? 'Un proyecto realizado por ' + brandName;
                 ))}
               </ul>
             ) : (
-              <p class="text-sm text-white/50">No hay servicios especificados.</p>
+              <p class="text-sm text-black/50">No hay servicios especificados.</p>
             )}
           </div>
         </aside>
@@ -101,7 +101,7 @@ const safeDesc = summary ?? 'Un proyecto realizado por ' + brandName;
 
       {gallery && gallery.length > 0 && (
          <section class="mt-24">
-          <h2 class="text-3xl font-serif font-bold text-white text-center mb-10">Galería de Imágenes</h2>
+          <h2 class="text-3xl font-serif font-bold text-gray-600 text-center mb-10">Galería de Imágenes</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {gallery.map(item => (
               <a 

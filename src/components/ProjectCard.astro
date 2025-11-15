@@ -1,6 +1,7 @@
 ---
 // src/components/ProjectCard.astro
-// Versión: 2.2 | Refactor: Alias de Ruta (~/)
+// Versión: 2.4 | AÑADIDO: 'break-inside-avoid' para layout Masonry (CSS Columns)
+// Versión: 2.3 | CORRECCIÓN: Lógica de Slug (safeSlug)
 import type { CollectionEntry } from 'astro:content';
 import { getEntry } from 'astro:content';
 import { mdToHtml } from '~/utils/markdown';
@@ -14,12 +15,15 @@ const ajustes = await getEntry("ajustes", "home");
 const ctaTextos = ajustes?.data.cta_textos ?? {};
 const ctaText = ctaTextos.ver_proyecto ?? "Ver Caso de Estudio";
 
-const { client_name, titulo, summary, image } = project.data;
+// MODIFICADO: Extraer slug de project.data
+const { client_name, titulo, summary, image, slug } = project.data; 
 const safeImage = image ?? '/assets/uploads/placeholder.jpeg';
 const summaryHtml = summary ? mdToHtml(summary) : "";
+// AÑADIDO: Usar data.slug, con fallback al slug del archivo
+const safeSlug = slug ?? project.slug; 
 ---
 <a 
-  href={`/proyectos/${project.slug}`} 
+  href={`/proyectos/${safeSlug}`} 
   class="
     group relative flex flex-col w-full 
     rounded-lg overflow-hidden 
@@ -30,6 +34,7 @@ const summaryHtml = summary ? mdToHtml(summary) : "";
     no-underline hover:no-underline
     h-full
     shadow-md
+    break-inside-avoid /* V2.4: Evita que la tarjeta se parta entre columnas */
 ">
   <div class="relative w-full h-48 overflow-hidden">
     <img 

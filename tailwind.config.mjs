@@ -1,4 +1,6 @@
 // tailwind.config.mjs
+// Versión: 2.2 | ELIMINADO: Dependencia '@tailwindcss/line-clamp' (innecesaria).
+// Versión: 2.1 | AÑADIDO: Color 'background-alt' para romper monotonía.
 // Versión: 2.0 | Paleta: B2B Conservador (Modo Claro)
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -32,13 +34,15 @@ export default {
         
         // Texto Invertido (Sobre acentos)
         'text-inverted': '#FFFFFF', // Blanco
+
+        // --- V2.1 AÑADIDO ---
+        'background-alt': '#FAF9F6', // Tono Crema/Beige sutil para alternar secciones
       },
       fontFamily: {
         // Mantener las tipografías pero el estilo visual cambia con la paleta
         'sans': ['Lato', 'sans-serif'],
         'serif': ['Space Grotesk', 'sans-serif'],
       },
-      // Eliminado 'backdropBlur' ya que no se usará en el nuevo diseño
     },
   },
   plugins: [

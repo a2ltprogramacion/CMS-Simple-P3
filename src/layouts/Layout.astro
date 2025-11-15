@@ -1,5 +1,6 @@
 ---
 // src/layouts/Layout.astro
+// Versión: 3.3 | CORRECCIÓN: Contraste y texto de botones de footer, fix de tooltip CSS, texturas aumentadas.
 // Versión: 3.2 | Refactor: Footer unificado con impacto (Oscuro, Texturizado, CTA Integrado)
 // Versión: 3.1 | Corrección: Textura CSS, Animación Estrellas
 // Versión: 2.3 | CORRECCIÓN DE SINTAXIS
@@ -207,18 +208,18 @@ const renderedAddressHtml = mdToHtml(c.address ?? "");
             <div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-4">
               {waHref && (
                  <a href={waHref} target="_blank" 
-                    class="w-full sm:w-auto lg:w-full xl:w-auto bg-accent text-primary font-bold py-3 px-6 rounded-full hover:bg-white hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(0,191,255,0.4)] no-underline text-center">
-                   Chatear (WA)
+                    class="w-full sm:w-auto lg:w-full xl:w-auto bg-white text-accent-secondary font-bold py-3 px-6 rounded-full hover:bg-accent hover:text-white hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.4)] no-underline text-center">
+                   Chatear por WhatsApp
                  </a>
               )}
               {c.email && (
                 <button 
                   id="email-copy-button-cta" 
                   data-email={c.email}
-                  class="w-full sm:w-auto lg:w-full xl:w-auto bg-white/10 text-white font-bold py-3 px-6 rounded-full 
+                  class="w-full sm:w-auto lg:w-full xl:w-auto bg-white/20 text-white font-bold py-3 px-6 rounded-full 
 hover:bg-white hover:text-accent-secondary hover:scale-105 transition-all duration-300"
                 >
-                  Copiar Correo
+                  {c.email}
                 </button>
               )}
             </div>
@@ -245,13 +246,13 @@ hover:bg-white hover:text-accent-secondary hover:scale-105 transition-all durati
   .subtle-noise-texture {
     background-image: radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px);
     background-size: 2px 2px;
-    opacity: 0.5;
+    opacity: 0.8; /* Ajustado de 0.5 a 0.8 */
   }
   /* --- V3.2: Textura de Ruido CSS Global (Modo Oscuro) --- */
   .subtle-noise-texture-dark {
     background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
     background-size: 2px 2px;
-    opacity: 0.5;
+    opacity: 0.7; /* Ajustado de 0.5 a 0.7 */
   }
 
 	.floating-whatsapp {
@@ -286,6 +287,11 @@ hover:bg-white hover:text-accent-secondary hover:scale-105 transition-all durati
   .floating-scroll-top:hover { transform: scale(1.1); background-color: #1E3A8A; 
   }
   .floating-scroll-top.visible { opacity: 1; pointer-events: auto; }
+
+  /* V3.3: FIX TOOLTIP - Regla CSS faltante para mostrar el tooltip */
+  #email-tooltip.visible {
+    opacity: 1;
+  }
 
   /* V3.2: Estilos de Redes Sociales (Para Fondo Oscuro) */
   .social-icon-dark {
@@ -368,7 +374,8 @@ hover:bg-white hover:text-accent-secondary hover:scale-105 transition-all durati
               setTimeout(() => tooltip.classList.remove('visible'), 2000);
             })
             .catch(() => {
-              alert("No se pudo copiar. Intenta de nuevo o copia manualmente: " + email);
+              // No usar alert() - Usar un método de UI más robusto en V2
+              console.error("No se pudo copiar. Intenta de nuevo o copia manualmente: " + email);
             });
         }
       };

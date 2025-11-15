@@ -1,6 +1,6 @@
 ---
 // src/components/FeaturedProject.astro
-// Versión: 2.2 | Refactor: Alias de Ruta (~/)
+// Versión: 2.3 | CORRECCIÓN: Lógica de Slug (safeSlug)
 import type { CollectionEntry } from 'astro:content';
 import { getEntry } from 'astro:content';
 import { mdToHtml } from '~/utils/markdown';
@@ -14,9 +14,12 @@ const ajustes = await getEntry("ajustes", "home");
 const ctaTextos = ajustes?.data.cta_textos ?? {};
 const ctaText = ctaTextos.leer_mas ?? "Leer Caso Completo";
 
-const { client_name, titulo, summary, image } = project.data;
+// MODIFICADO: Extraer slug de project.data
+const { client_name, titulo, summary, image, slug } = project.data; 
 const safeImage = image ?? '/assets/uploads/placeholder.jpeg';
 const summaryHtml = summary ? mdToHtml(summary) : null;
+// AÑADIDO: Usar data.slug, con fallback al slug del archivo
+const safeSlug = slug ?? project.slug; 
 ---
 <article class="
   relative w-full rounded-xl overflow-hidden 
@@ -49,7 +52,7 @@ const summaryHtml = summary ? mdToHtml(summary) : null;
     )}
     <div>
       <a 
-        href={`/proyectos/${project.slug}`} 
+        href={`/proyectos/${safeSlug}`} 
         class="
           inline-flex items-center justify-center
           bg-accent-secondary text-text-inverted font-bold 
